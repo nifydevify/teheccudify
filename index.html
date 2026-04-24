@@ -68,7 +68,7 @@ body::before {
 
 .header {
   text-align: center;
-  padding: 28px 0 24px;
+  padding: 28px 0 20px;
   opacity: 0;
   animation: fadeUp 1s 0.1s forwards;
 }
@@ -114,12 +114,43 @@ body::before {
   margin-top: 6px;
 }
 
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  opacity: 0;
+  animation: fadeUp 1s 0.15s forwards;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+  color: var(--ink-dim);
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
 .location-bar {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 8px;
   flex-wrap: wrap;
 }
 
@@ -143,9 +174,7 @@ body::before {
   border-radius: 2px;
 }
 
-.location-btn:active {
-  background: rgba(212, 165, 116, 0.1);
-}
+.location-btn:active { background: rgba(212, 165, 116, 0.1); }
 
 .hijri {
   font-family: 'Cormorant Garamond', serif;
@@ -157,7 +186,6 @@ body::before {
   text-align: center;
 }
 
-/* Setup / first run panel */
 .setup-panel {
   padding: 32px 24px;
   text-align: center;
@@ -192,20 +220,12 @@ body::before {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
   font-weight: 500;
   margin-bottom: 12px;
 }
 
-.btn-primary:active {
-  background: var(--gold);
-  color: var(--bg);
-}
-
-.btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+.btn-primary:active { background: var(--gold); color: var(--bg); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btn-secondary {
   width: 100%;
@@ -221,14 +241,7 @@ body::before {
   margin-bottom: 12px;
 }
 
-.btn-secondary:active {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-/* Search */
-.search-box {
-  margin-top: 20px;
-}
+.btn-secondary:active { background: rgba(255, 255, 255, 0.02); }
 
 .search-input {
   width: 100%;
@@ -240,15 +253,14 @@ body::before {
   font-size: 16px;
   border-radius: 2px;
   outline: none;
+  margin-top: 16px;
 }
 
-.search-input:focus {
-  border-color: var(--gold);
-}
+.search-input:focus { border-color: var(--gold); }
 
 .search-results {
   margin-top: 8px;
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.3);
@@ -264,10 +276,7 @@ body::before {
 }
 
 .search-result:last-child { border-bottom: none; }
-
-.search-result:active {
-  background: rgba(212, 165, 116, 0.08);
-}
+.search-result:active { background: rgba(212, 165, 116, 0.08); }
 
 .search-result .district {
   font-family: 'Cormorant Garamond', serif;
@@ -282,15 +291,12 @@ body::before {
   text-transform: uppercase;
 }
 
-/* Current prayer card */
 .current-prayer {
   background: linear-gradient(180deg, rgba(127, 181, 127, 0.08) 0%, rgba(127, 181, 127, 0.02) 100%);
   border: 1px solid rgba(127, 181, 127, 0.2);
   padding: 20px 24px;
   margin-bottom: 16px;
   text-align: center;
-  opacity: 0;
-  animation: fadeUp 1s 0.2s forwards;
 }
 
 .current-label {
@@ -316,10 +322,7 @@ body::before {
   font-variant-numeric: tabular-nums;
 }
 
-.current-remaining strong {
-  color: var(--gold-bright);
-  font-weight: 500;
-}
+.current-remaining strong { color: var(--gold-bright); font-weight: 500; }
 
 .next-prayer-hint {
   font-size: 11px;
@@ -344,7 +347,6 @@ body::before {
   50% { opacity: 1; transform: scale(1.2); }
 }
 
-/* Main teheccüd card */
 .card-main {
   background: linear-gradient(180deg, rgba(212, 165, 116, 0.06) 0%, rgba(212, 165, 116, 0.02) 100%);
   border: 1px solid var(--line);
@@ -353,8 +355,6 @@ body::before {
   margin-bottom: 16px;
   text-align: center;
   position: relative;
-  opacity: 0;
-  animation: fadeUp 1s 0.35s forwards;
 }
 
 .card-main::before, .card-main::after {
@@ -415,18 +415,13 @@ body::before {
   font-variant-numeric: tabular-nums;
 }
 
-.countdown strong {
-  color: var(--gold-bright);
-  font-weight: 500;
-}
+.countdown strong { color: var(--gold-bright); font-weight: 500; }
 
 .window-info {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-bottom: 16px;
-  opacity: 0;
-  animation: fadeUp 1s 0.55s forwards;
 }
 
 .window-card {
@@ -457,8 +452,6 @@ body::before {
   border: 1px solid var(--line);
   padding: 20px 20px;
   margin-bottom: 16px;
-  opacity: 0;
-  animation: fadeUp 1s 0.7s forwards;
 }
 
 .prayers-title {
@@ -507,14 +500,10 @@ body::before {
 }
 
 .prayer-row.active .prayer-name,
-.prayer-row.active .prayer-time {
-  color: var(--gold-bright);
-}
+.prayer-row.active .prayer-time { color: var(--gold-bright); }
 
 .prayer-row.passed .prayer-name,
-.prayer-row.passed .prayer-time {
-  opacity: 0.45;
-}
+.prayer-row.passed .prayer-time { opacity: 0.45; }
 
 .notify-btn {
   width: 100%;
@@ -527,26 +516,18 @@ body::before {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   cursor: pointer;
-  margin-bottom: 16px;
-  opacity: 0;
-  animation: fadeUp 1s 0.85s forwards;
+  margin-bottom: 12px;
   font-weight: 500;
 }
 
-.notify-btn:active {
-  background: var(--gold);
-  color: var(--bg);
-}
+.notify-btn:active { background: var(--gold); color: var(--bg); }
 
 .notify-btn.active {
   background: rgba(212, 165, 116, 0.1);
   color: var(--gold-bright);
 }
 
-.notify-btn.active::before {
-  content: '● ';
-  color: var(--green);
-}
+.notify-btn.active::before { content: '● '; color: var(--green); }
 
 .source-tag {
   text-align: center;
@@ -555,8 +536,6 @@ body::before {
   text-transform: uppercase;
   color: var(--gold-deep);
   margin-bottom: 16px;
-  opacity: 0;
-  animation: fadeUp 1s 1.0s forwards;
   line-height: 1.8;
 }
 
@@ -564,8 +543,6 @@ body::before {
   text-align: center;
   padding: 20px 20px 28px;
   font-family: 'Cormorant Garamond', serif;
-  opacity: 0;
-  animation: fadeUp 1s 1.15s forwards;
 }
 
 .hadith-text {
@@ -593,17 +570,6 @@ body::before {
   margin: 12px 0;
   border-radius: 2px;
   line-height: 1.5;
-}
-
-.info-msg {
-  padding: 14px;
-  background: rgba(127, 181, 127, 0.08);
-  border: 1px solid rgba(127, 181, 127, 0.2);
-  color: var(--green);
-  font-size: 13px;
-  text-align: center;
-  margin: 12px 0;
-  border-radius: 2px;
 }
 
 .loading-box {
@@ -645,11 +611,189 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Kıble pusulası */
+.qibla-panel {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.qibla-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.qibla-subtitle {
+  font-size: 11px;
+  color: var(--ink-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.compass-wrap {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+}
+
+.compass-bg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(212, 165, 116, 0.05), transparent 70%),
+    rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--line);
+  position: absolute;
+  inset: 0;
+}
+
+/* Rose (dönen kısım — N/E/S/W etiketleri buna bağlı) */
+.compass-rose {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  transition: transform 0.15s ease-out;
+}
+
+.cardinal {
+  position: absolute;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: var(--ink-dim);
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+}
+
+.cardinal.n { transform: translate(-50%, -135px); color: var(--gold); font-weight: 500; font-size: 22px; }
+.cardinal.e { transform: translate(115px, -50%); }
+.cardinal.s { transform: translate(-50%, 115px); }
+.cardinal.w { transform: translate(-135px, -50%); }
+
+.tick {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  width: 1px;
+  height: 10px;
+  background: var(--gold-deep);
+  transform-origin: 0.5px 136px;
+  opacity: 0.4;
+}
+
+/* Kabe işareti — rose'un içinde, yani rose ile döner */
+.kaaba-marker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-top: -22px;
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+.kaaba-icon {
+  position: absolute;
+  left: 50%;
+  top: -120px;
+  transform: translateX(-50%);
+  font-size: 28px;
+  background: var(--gold);
+  color: var(--bg);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.5);
+}
+
+/* Sabit ok (ekran yukarı baksın — telefonu hangi yöne tutuyorsa) */
+.compass-arrow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 110px;
+  background: linear-gradient(to top, transparent, var(--ink-dim));
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.compass-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px var(--gold);
+}
+
+.qibla-info {
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--ink-dim);
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+}
+
+.qibla-info strong {
+  color: var(--gold-bright);
+  font-weight: 500;
+}
+
+.qibla-aligned {
+  animation: alignedPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes alignedPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(127, 181, 127, 0.5); background: var(--green); }
+  50% { box-shadow: 0 0 40px rgba(127, 181, 127, 0.9); background: var(--green); }
+}
+
+.qibla-status {
+  margin-top: 18px;
+  padding: 12px 20px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: inline-block;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+}
+
+.qibla-status.aligned {
+  background: rgba(127, 181, 127, 0.1);
+  border-color: var(--green);
+  color: var(--green);
+}
+
 .hidden { display: none !important; }
 
 @media (max-width: 380px) {
   .time-main { font-size: 64px; }
   .app-title { font-size: 34px; }
+  .compass-wrap { width: 240px; height: 240px; }
+  .cardinal.n { transform: translate(-50%, -115px); }
+  .cardinal.e { transform: translate(97px, -50%); }
+  .cardinal.s { transform: translate(-50%, 97px); }
+  .cardinal.w { transform: translate(-115px, -50%); }
+  .kaaba-icon { top: -100px; }
+  .compass-arrow { height: 92px; }
 }
 </style>
 </head>
@@ -672,6 +816,11 @@ body::before {
     <div class="hijri" id="hijriDate"></div>
   </div>
 
+  <div class="tabs hidden" id="tabs">
+    <button class="tab active" data-tab="times">Vakitler</button>
+    <button class="tab" data-tab="qibla">Kıble</button>
+  </div>
+
   <div id="content"></div>
 
 </div>
@@ -679,46 +828,25 @@ body::before {
 <script>
 'use strict';
 
-// ===================================================================
-// KONUM + VERİ YÖNETİMİ
-// ===================================================================
-
 const API_BASE = 'https://ezanvakti.imsakiyem.com/api';
 const TURKEY_COUNTRY_ID = '2';
-const STORAGE_KEY = 'teheccud_v2';
+const STORAGE_KEY = 'teheccud_v3';
 
-// localStorage'da saklanan veri yapısı:
-// {
-//   version: 2,
-//   location: { districtId, districtName, stateName, lat, lng },
-//   yearData: { year, times: {'MMDD': 'HH:MM|HH:MM|...'}, hijri: {'MMDD': '...'} },
-//   lastUpdate: timestamp,
-//   locationCache: { states: [...], districtsByState: {...} }  // opsiyonel cache
-// }
+// Kabe koordinatları
+const KAABA_LAT = 21.4225;
+const KAABA_LNG = 39.8262;
 
 function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch(e) { return null; }
+  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e) { return null; }
 }
-
 function saveState(state) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch(e) { console.error('Save failed:', e); }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e) { console.error('Save failed:', e); }
 }
 
-// ===================================================================
-// API ÇAĞRILARI
-// ===================================================================
-
-async function apiGet(path, options = {}) {
-  const res = await fetch(API_BASE + path, {
-    headers: { 'Accept': 'application/json' },
-    ...options
-  });
+async function apiGet(path) {
+  const res = await fetch(API_BASE + path, { headers: { 'Accept': 'application/json' } });
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const json = await res.json();
   if (!json.success && json.code !== 200) throw new Error(json.message || 'API hatası');
@@ -727,53 +855,35 @@ async function apiGet(path, options = {}) {
 
 async function fetchStates() {
   const json = await apiGet('/locations/states?countryId=' + TURKEY_COUNTRY_ID);
-  return json.data; // [{_id, name, ...}]
+  return json.data;
 }
-
 async function fetchDistricts(stateId) {
   const json = await apiGet('/locations/districts?stateId=' + stateId);
   return json.data;
 }
-
 async function fetchYearlyTimes(districtId) {
   const json = await apiGet('/prayer-times/' + districtId + '/yearly');
-  return json.data; // array of day objects
+  return json.data;
 }
-
-// ===================================================================
-// VERİ İŞLEME
-// ===================================================================
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
 function processYearlyData(apiData) {
-  // apiData: [{date: '2026-01-01T00:00:00.000Z', times: {imsak, gunes, ...}, hijri_date: {...}}]
-  const times = {};
-  const hijri = {};
+  const times = {}, hijri = {};
   let year = null;
-
   for (const day of apiData) {
-    const dateStr = day.date.slice(0, 10); // "2026-01-01"
+    const dateStr = day.date.slice(0, 10);
     const [y, m, d] = dateStr.split('-');
     year = parseInt(y);
-    const key = m + d; // "MMDD"
-
+    const key = m + d;
     const t = day.times;
     times[key] = [t.imsak, t.gunes, t.ogle, t.ikindi, t.aksam, t.yatsi].join('|');
-
-    if (day.hijri_date && day.hijri_date.full_date) {
-      hijri[key] = day.hijri_date.full_date;
-    }
+    if (day.hijri_date && day.hijri_date.full_date) hijri[key] = day.hijri_date.full_date;
   }
-
   return { year, times, hijri };
 }
 
-// ===================================================================
-// KONUM → İLÇE BULMA
-// ===================================================================
-
-// Haversine mesafesi (km)
+// Haversine distance (km)
 function distance(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -784,40 +894,50 @@ function distance(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// Türkiye'nin 81 ilinin yaklaşık merkez koordinatları (GPS → en yakın il bulma için)
+// Kıble yön açısı (kuzeye göre saat yönünde derece)
+function qiblaBearing(lat, lng) {
+  const toRad = x => x * Math.PI / 180;
+  const toDeg = x => x * 180 / Math.PI;
+  const φ1 = toRad(lat), φ2 = toRad(KAABA_LAT);
+  const Δλ = toRad(KAABA_LNG - lng);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+// Türkiye 81 ilinin yaklaşık koordinatları
 const STATE_COORDS = {
-  "ADANA": [37.0, 35.3214], "ADIYAMAN": [37.7648, 38.2786], "AFYONKARAHİSAR": [38.7507, 30.5567],
-  "AĞRI": [39.7191, 43.0503], "AKSARAY": [38.3687, 34.037], "AMASYA": [40.6499, 35.8353],
-  "ANKARA": [39.9334, 32.8597], "ANTALYA": [36.8969, 30.7133], "ARDAHAN": [41.1105, 42.7022],
-  "ARTVİN": [41.1828, 41.8183], "AYDIN": [37.8481, 27.8454], "BALIKESİR": [39.6484, 27.8826],
-  "BARTIN": [41.5811, 32.461], "BATMAN": [37.8812, 41.1351], "BAYBURT": [40.2552, 40.2249],
-  "BİLECİK": [40.058, 30.0665], "BİNGÖL": [38.885, 40.498], "BİTLİS": [38.4011, 42.1095],
-  "BOLU": [40.7392, 31.6089], "BURDUR": [37.7212, 30.2901], "BURSA": [40.1956, 29.06],
-  "ÇANAKKALE": [40.1553, 26.4142], "ÇANKIRI": [40.6013, 33.6134], "ÇORUM": [40.5506, 34.9556],
-  "DENİZLİ": [37.7765, 29.0864], "DİYARBAKIR": [37.9144, 40.2306], "DÜZCE": [40.8438, 31.1565],
-  "EDİRNE": [41.6771, 26.5557], "ELAZIĞ": [38.681, 39.2264], "ERZİNCAN": [39.7464, 39.4914],
-  "ERZURUM": [39.9055, 41.2658], "ESKİŞEHİR": [39.7767, 30.5206], "GAZİANTEP": [37.0662, 37.3833],
-  "GİRESUN": [40.9128, 38.3895], "GÜMÜŞHANE": [40.4603, 39.4814], "HAKKARİ": [37.5744, 43.7408],
-  "HATAY": [36.4018, 36.3498], "IĞDIR": [39.9167, 44.045], "ISPARTA": [37.7648, 30.5566],
-  "İSTANBUL": [41.0082, 28.9784], "İZMİR": [38.4192, 27.1287], "KAHRAMANMARAŞ": [37.5858, 36.9371],
-  "KARABÜK": [41.2061, 32.6204], "KARAMAN": [37.1759, 33.2287], "KARS": [40.6013, 43.0975],
-  "KASTAMONU": [41.3887, 33.7827], "KAYSERİ": [38.7312, 35.4787], "KİLİS": [36.7184, 37.1212],
-  "KIRIKKALE": [39.8468, 33.5153], "KIRKLARELİ": [41.7333, 27.2167], "KIRŞEHİR": [39.1425, 34.1709],
-  "KOCAELİ": [40.8533, 29.8815], "KONYA": [37.8714, 32.4846], "KÜTAHYA": [39.4199, 29.9833],
-  "MALATYA": [38.3552, 38.3095], "MANİSA": [38.6191, 27.4289], "MARDİN": [37.3212, 40.7245],
-  "MERSİN": [36.8121, 34.6415], "MUĞLA": [37.2153, 28.3636], "MUŞ": [38.7432, 41.5065],
-  "NEVŞEHİR": [38.6244, 34.7239], "NİĞDE": [37.9667, 34.6833], "ORDU": [40.9839, 37.8764],
-  "OSMANİYE": [37.213, 36.1763], "RİZE": [41.025, 40.5175], "SAKARYA": [40.7569, 30.3781],
-  "SAMSUN": [41.2867, 36.33], "ŞANLIURFA": [37.1591, 38.7969], "SİİRT": [37.9333, 41.95],
-  "SİNOP": [42.0231, 35.1531], "ŞIRNAK": [37.5139, 42.4611], "SİVAS": [39.7477, 37.0179],
-  "TEKİRDAĞ": [40.9833, 27.5167], "TOKAT": [40.3167, 36.55], "TRABZON": [41.0015, 39.7178],
-  "TUNCELİ": [39.1079, 39.5401], "UŞAK": [38.6823, 29.4082], "VAN": [38.4891, 43.4089],
-  "YALOVA": [40.65, 29.2667], "YOZGAT": [39.8181, 34.8147], "ZONGULDAK": [41.4564, 31.7987]
+  "ADANA":[37.0,35.3214],"ADIYAMAN":[37.7648,38.2786],"AFYONKARAHİSAR":[38.7507,30.5567],
+  "AĞRI":[39.7191,43.0503],"AKSARAY":[38.3687,34.037],"AMASYA":[40.6499,35.8353],
+  "ANKARA":[39.9334,32.8597],"ANTALYA":[36.8969,30.7133],"ARDAHAN":[41.1105,42.7022],
+  "ARTVİN":[41.1828,41.8183],"AYDIN":[37.8481,27.8454],"BALIKESİR":[39.6484,27.8826],
+  "BARTIN":[41.5811,32.461],"BATMAN":[37.8812,41.1351],"BAYBURT":[40.2552,40.2249],
+  "BİLECİK":[40.058,30.0665],"BİNGÖL":[38.885,40.498],"BİTLİS":[38.4011,42.1095],
+  "BOLU":[40.7392,31.6089],"BURDUR":[37.7212,30.2901],"BURSA":[40.1956,29.06],
+  "ÇANAKKALE":[40.1553,26.4142],"ÇANKIRI":[40.6013,33.6134],"ÇORUM":[40.5506,34.9556],
+  "DENİZLİ":[37.7765,29.0864],"DİYARBAKIR":[37.9144,40.2306],"DÜZCE":[40.8438,31.1565],
+  "EDİRNE":[41.6771,26.5557],"ELAZIĞ":[38.681,39.2264],"ERZİNCAN":[39.7464,39.4914],
+  "ERZURUM":[39.9055,41.2658],"ESKİŞEHİR":[39.7767,30.5206],"GAZİANTEP":[37.0662,37.3833],
+  "GİRESUN":[40.9128,38.3895],"GÜMÜŞHANE":[40.4603,39.4814],"HAKKARİ":[37.5744,43.7408],
+  "HATAY":[36.4018,36.3498],"IĞDIR":[39.9167,44.045],"ISPARTA":[37.7648,30.5566],
+  "İSTANBUL":[41.0082,28.9784],"İZMİR":[38.4192,27.1287],"KAHRAMANMARAŞ":[37.5858,36.9371],
+  "KARABÜK":[41.2061,32.6204],"KARAMAN":[37.1759,33.2287],"KARS":[40.6013,43.0975],
+  "KASTAMONU":[41.3887,33.7827],"KAYSERİ":[38.7312,35.4787],"KİLİS":[36.7184,37.1212],
+  "KIRIKKALE":[39.8468,33.5153],"KIRKLARELİ":[41.7333,27.2167],"KIRŞEHİR":[39.1425,34.1709],
+  "KOCAELİ":[40.8533,29.8815],"KONYA":[37.8714,32.4846],"KÜTAHYA":[39.4199,29.9833],
+  "MALATYA":[38.3552,38.3095],"MANİSA":[38.6191,27.4289],"MARDİN":[37.3212,40.7245],
+  "MERSİN":[36.8121,34.6415],"MUĞLA":[37.2153,28.3636],"MUŞ":[38.7432,41.5065],
+  "NEVŞEHİR":[38.6244,34.7239],"NİĞDE":[37.9667,34.6833],"ORDU":[40.9839,37.8764],
+  "OSMANİYE":[37.213,36.1763],"RİZE":[41.025,40.5175],"SAKARYA":[40.7569,30.3781],
+  "SAMSUN":[41.2867,36.33],"ŞANLIURFA":[37.1591,38.7969],"SİİRT":[37.9333,41.95],
+  "SİNOP":[42.0231,35.1531],"ŞIRNAK":[37.5139,42.4611],"SİVAS":[39.7477,37.0179],
+  "TEKİRDAĞ":[40.9833,27.5167],"TOKAT":[40.3167,36.55],"TRABZON":[41.0015,39.7178],
+  "TUNCELİ":[39.1079,39.5401],"UŞAK":[38.6823,29.4082],"VAN":[38.4891,43.4089],
+  "YALOVA":[40.65,29.2667],"YOZGAT":[39.8181,34.8147],"ZONGULDAK":[41.4564,31.7987]
 };
 
 function findNearestState(lat, lng) {
-  let best = null;
-  let bestDist = Infinity;
+  let best = null, bestDist = Infinity;
   for (const [name, coords] of Object.entries(STATE_COORDS)) {
     const d = distance(lat, lng, coords[0], coords[1]);
     if (d < bestDist) { bestDist = d; best = name; }
@@ -826,7 +946,272 @@ function findNearestState(lat, lng) {
 }
 
 // ===================================================================
-// RENDER HELPERS
+// UI
+// ===================================================================
+
+const content = document.getElementById('content');
+const locationBar = document.getElementById('locationBar');
+const locationName = document.getElementById('locationName');
+const hijriDate = document.getElementById('hijriDate');
+const tabsEl = document.getElementById('tabs');
+
+let currentTab = 'times';
+let renderInterval = null;
+
+function showLoading(text) {
+  stopRenderInterval();
+  tabsEl.classList.add('hidden');
+  content.innerHTML = '<div class="loading-box"><div class="loading-text">' + text + '</div><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div></div>';
+}
+function updateProgress(pct) {
+  const fill = document.getElementById('progressFill');
+  if (fill) fill.style.width = pct + '%';
+}
+
+function stopRenderInterval() {
+  if (renderInterval) { clearInterval(renderInterval); renderInterval = null; }
+}
+
+function showSetup(errorMsg) {
+  stopRenderInterval();
+  locationBar.classList.add('hidden');
+  tabsEl.classList.add('hidden');
+  hijriDate.textContent = '';
+  content.innerHTML = `
+    <div class="setup-panel">
+      <div class="setup-title">Hoş geldin</div>
+      <div class="setup-desc">
+        Namaz vakitlerini almak için konumunu seç.<br>
+        Bir kez yüklendikten sonra offline çalışır.
+      </div>
+      <button class="btn-primary" id="btnGps">Konumu Otomatik Bul</button>
+      <button class="btn-secondary" id="btnManual">Manuel Seç</button>
+      <div id="setupMsg">${errorMsg ? '<div class="error-msg">' + errorMsg + '</div>' : ''}</div>
+    </div>
+  `;
+  document.getElementById('btnGps').addEventListener('click', startGpsFlow);
+  document.getElementById('btnManual').addEventListener('click', startManualFlow);
+}
+
+function showDistrictPicker(stateObj, districts, autoSelectedName, lat, lng) {
+  stopRenderInterval();
+  locationBar.classList.add('hidden');
+  tabsEl.classList.add('hidden');
+  hijriDate.textContent = '';
+
+  districts.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+  const resultsHTML = districts.map(d => {
+    const highlighted = autoSelectedName && d.name.toLocaleUpperCase('tr') === autoSelectedName.toLocaleUpperCase('tr');
+    return `
+      <div class="search-result" data-district-id="${d._id}" data-district-name="${d.name}" style="${highlighted ? 'background: rgba(212, 165, 116, 0.08);' : ''}">
+        <span class="district">${d.name}${highlighted ? ' ★' : ''}</span>
+        <span class="state">${highlighted ? 'Önerilen' : ''}</span>
+      </div>
+    `;
+  }).join('');
+
+  content.innerHTML = `
+    <div class="setup-panel">
+      <div class="setup-title">${stateObj.name}</div>
+      <div class="setup-desc">İlçeni seç. ${autoSelectedName ? 'Yıldızlı olan ★ konumuna en yakın.' : ''}</div>
+      <input type="text" class="search-input" id="districtSearch" placeholder="İlçe ara...">
+      <div class="search-results" id="districtResults">${resultsHTML}</div>
+      <button class="btn-secondary" id="btnBack" style="margin-top: 16px;">← Farklı il seç</button>
+    </div>
+  `;
+
+  const input = document.getElementById('districtSearch');
+  const results = document.getElementById('districtResults');
+
+  function bindClicks() {
+    results.querySelectorAll('.search-result').forEach(el => {
+      el.addEventListener('click', () => {
+        const locInfo = {
+          districtId: el.getAttribute('data-district-id'),
+          districtName: el.getAttribute('data-district-name'),
+          stateName: stateObj.name,
+          lat: lat || null,
+          lng: lng || null
+        };
+        completeSetup(locInfo);
+      });
+    });
+  }
+  bindClicks();
+
+  input.addEventListener('input', (e) => {
+    const q = e.target.value.toLocaleLowerCase('tr');
+    const filtered = districts.filter(d => d.name.toLocaleLowerCase('tr').includes(q));
+    results.innerHTML = filtered.map(d => `
+      <div class="search-result" data-district-id="${d._id}" data-district-name="${d.name}">
+        <span class="district">${d.name}</span>
+        <span class="state"></span>
+      </div>
+    `).join('') || '<div style="padding: 20px; text-align: center; color: var(--ink-dim); font-size: 13px;">Sonuç yok</div>';
+    bindClicks();
+  });
+
+  document.getElementById('btnBack').addEventListener('click', startManualFlow);
+}
+
+function showStatePicker(states) {
+  stopRenderInterval();
+  locationBar.classList.add('hidden');
+  tabsEl.classList.add('hidden');
+  hijriDate.textContent = '';
+  states.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+
+  const resultsHTML = states.map(s => `
+    <div class="search-result" data-state-id="${s._id}" data-state-name="${s.name}">
+      <span class="district">${s.name}</span>
+      <span class="state">İl</span>
+    </div>
+  `).join('');
+
+  content.innerHTML = `
+    <div class="setup-panel">
+      <div class="setup-title">İl Seç</div>
+      <div class="setup-desc">Sonra ilçe seçeceksin</div>
+      <input type="text" class="search-input" id="stateSearch" placeholder="İl ara...">
+      <div class="search-results" id="stateResults">${resultsHTML}</div>
+      <button class="btn-secondary" id="btnBack" style="margin-top: 16px;">← Geri</button>
+    </div>
+  `;
+
+  const input = document.getElementById('stateSearch');
+  const results = document.getElementById('stateResults');
+
+  function bindClicks() {
+    results.querySelectorAll('.search-result').forEach(el => {
+      el.addEventListener('click', async () => {
+        const sid = el.getAttribute('data-state-id');
+        const sname = el.getAttribute('data-state-name');
+        showLoading(sname + ' ilçeleri');
+        try {
+          const districts = await fetchDistricts(sid);
+          showDistrictPicker({ _id: sid, name: sname }, districts, null, null, null);
+        } catch(e) {
+          showSetup('İlçeler alınamadı: ' + e.message);
+        }
+      });
+    });
+  }
+  bindClicks();
+
+  input.addEventListener('input', (e) => {
+    const q = e.target.value.toLocaleLowerCase('tr');
+    const filtered = states.filter(s => s.name.toLocaleLowerCase('tr').includes(q));
+    results.innerHTML = filtered.map(s => `
+      <div class="search-result" data-state-id="${s._id}" data-state-name="${s.name}">
+        <span class="district">${s.name}</span>
+        <span class="state">İl</span>
+      </div>
+    `).join('') || '<div style="padding: 20px; text-align: center; color: var(--ink-dim); font-size: 13px;">Sonuç yok</div>';
+    bindClicks();
+  });
+
+  document.getElementById('btnBack').addEventListener('click', () => showSetup());
+}
+
+async function startGpsFlow() {
+  if (!('geolocation' in navigator)) {
+    showSetup('Bu cihazda GPS desteklenmiyor. Manuel seç.');
+    return;
+  }
+
+  showLoading('Konum alınıyor');
+  updateProgress(10);
+
+  let position;
+  try {
+    position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 300000
+      });
+    });
+  } catch(e) {
+    showSetup('Konum alınamadı: ' + (e.message || 'İzin verilmedi'));
+    return;
+  }
+
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+
+  updateProgress(30);
+  const nearest = findNearestState(lat, lng);
+  showLoading(nearest.name + ' ilçeleri yükleniyor');
+
+  let states, districts, stateObj;
+  try {
+    updateProgress(50);
+    states = await fetchStates();
+    stateObj = states.find(s => s.name.toLocaleUpperCase('tr') === nearest.name);
+    if (!stateObj) { showSetup('İl eşleştirilemedi.'); return; }
+
+    updateProgress(75);
+    districts = await fetchDistricts(stateObj._id);
+  } catch(e) {
+    showSetup('Veri alınamadı: ' + e.message);
+    return;
+  }
+
+  updateProgress(100);
+
+  // İl merkeziyle aynı isimli ilçeyi öner (örn. "İstanbul" yerine "Çekmeköy" değil,
+  // ama kullanıcı kendi seçsin - biz sadece kullanıcıyı ilçe seçtirme ekranına yönlendiriyoruz)
+  // Kullanıcının konumuna en yakın merkez ilçeyi "önerelim" — il merkez koordinatını kullanabiliriz
+  // ama ilçelerin koordinatı yok. Yine de "MERKEZ" veya il adıyla eşleşeni işaretleyelim
+  let suggested = null;
+  const stateName = stateObj.name.toLocaleUpperCase('tr');
+  const merkezMatch = districts.find(d => {
+    const n = d.name.toLocaleUpperCase('tr');
+    return n === stateName || n === 'MERKEZ';
+  });
+  if (merkezMatch) suggested = merkezMatch.name;
+
+  showDistrictPicker(stateObj, districts, suggested, lat, lng);
+}
+
+async function startManualFlow() {
+  showLoading('İl listesi');
+  try {
+    const states = await fetchStates();
+    showStatePicker(states);
+  } catch(e) {
+    showSetup('İl listesi alınamadı: ' + e.message);
+  }
+}
+
+async function completeSetup(loc) {
+  showLoading(loc.districtName + ' vakitleri indiriliyor');
+  updateProgress(50);
+  try {
+    const rawData = await fetchYearlyTimes(loc.districtId);
+    updateProgress(90);
+
+    const yearData = processYearlyData(rawData);
+    const existingState = loadState() || {};
+    const state = {
+      version: 3,
+      location: loc,
+      yearData: yearData,
+      lastUpdate: Date.now(),
+      // Eğer kullanıcının GPS koordinatı varsa sakla (kıble için)
+      userLat: loc.lat || existingState.userLat || null,
+      userLng: loc.lng || existingState.userLng || null
+    };
+    saveState(state);
+    updateProgress(100);
+    setTimeout(() => renderApp(state), 300);
+  } catch(e) {
+    showSetup('Vakit verisi alınamadı: ' + e.message);
+  }
+}
+
+// ===================================================================
+// MAIN RENDER
 // ===================================================================
 
 function formatDateTR(date) {
@@ -851,7 +1236,6 @@ function parseTime(date, timeStr) {
 }
 
 function keyFor(date) { return pad(date.getMonth() + 1) + pad(date.getDate()); }
-
 function formatTime(date) { return pad(date.getHours()) + ':' + pad(date.getMinutes()); }
 
 function getPrayerTimes(date, yearData) {
@@ -867,412 +1251,6 @@ function getPrayerTimes(date, yearData) {
     maghrib: parseTime(date, parts[4]),
     isha: parseTime(date, parts[5])
   };
-}
-
-// ===================================================================
-// UI STATES
-// ===================================================================
-
-const content = document.getElementById('content');
-const locationBar = document.getElementById('locationBar');
-const locationName = document.getElementById('locationName');
-const hijriDate = document.getElementById('hijriDate');
-
-function showLoading(text) {
-  content.innerHTML = '<div class="loading-box"><div class="loading-text">' + text + '</div><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div></div>';
-}
-
-function updateProgress(pct) {
-  const fill = document.getElementById('progressFill');
-  if (fill) fill.style.width = pct + '%';
-}
-
-function showSetup() {
-  locationBar.classList.add('hidden');
-  hijriDate.textContent = '';
-  content.innerHTML = `
-    <div class="setup-panel">
-      <div class="setup-title">Hoş geldin</div>
-      <div class="setup-desc">
-        Namaz vakitlerini almak için konumunu seç.<br>
-        Bir kez yüklendikten sonra offline çalışır.
-      </div>
-      <button class="btn-primary" id="btnGps">Konumu Otomatik Bul</button>
-      <button class="btn-secondary" id="btnManual">Manuel Seç</button>
-      <div id="setupMsg"></div>
-    </div>
-  `;
-  document.getElementById('btnGps').addEventListener('click', startGpsFlow);
-  document.getElementById('btnManual').addEventListener('click', startManualFlow);
-}
-
-function showManualSearch(states) {
-  locationBar.classList.add('hidden');
-  hijriDate.textContent = '';
-  content.innerHTML = `
-    <div class="setup-panel">
-      <div class="setup-title">İlçe Seç</div>
-      <div class="setup-desc">İl ya da ilçe adının bir kısmını yaz</div>
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="Örn: Çekmeköy, İstanbul, Ankara..." autocomplete="off">
-        <div class="search-results" id="searchResults"></div>
-      </div>
-      <button class="btn-secondary" id="btnBack" style="margin-top: 16px;">← Geri</button>
-    </div>
-  `;
-
-  const input = document.getElementById('searchInput');
-  const results = document.getElementById('searchResults');
-  document.getElementById('btnBack').addEventListener('click', showSetup);
-
-  // Arama state: seçilen il için önce ilçeleri cache'le
-  let districtsByState = {};
-  let allDistricts = [];
-
-  async function loadAllDistricts() {
-    // İlk başlarken birkaç büyük ili lazy yüklemeyelim, kullanıcı yazdıkça filter
-    // İlk etapta sadece il listesini gösterelim, kullanıcı ili seçince ilçeleri yükleyelim
-  }
-
-  function renderStates(filter) {
-    const f = filter.toLocaleLowerCase('tr');
-    const filtered = states.filter(s => s.name.toLocaleLowerCase('tr').includes(f));
-    results.innerHTML = filtered.slice(0, 30).map(s => `
-      <div class="search-result" data-state-id="${s._id}" data-state-name="${s.name}">
-        <span class="district">${s.name}</span>
-        <span class="state">İl</span>
-      </div>
-    `).join('') || '<div style="padding: 20px; text-align: center; color: var(--ink-dim); font-size: 13px;">Sonuç yok</div>';
-
-    results.querySelectorAll('.search-result').forEach(el => {
-      el.addEventListener('click', async () => {
-        const sid = el.getAttribute('data-state-id');
-        const sname = el.getAttribute('data-state-name');
-        results.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--gold); font-size: 11px; letter-spacing: 0.2em;">İLÇELER YÜKLENİYOR</div>';
-        try {
-          const districts = await fetchDistricts(sid);
-          districts.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
-          renderDistrictsForState(districts, sname);
-        } catch(e) {
-          results.innerHTML = '<div class="error-msg">İlçeler alınamadı: ' + e.message + '</div>';
-        }
-      });
-    });
-  }
-
-  function renderDistrictsForState(districts, stateName) {
-    results.innerHTML = districts.map(d => `
-      <div class="search-result" data-district-id="${d._id}" data-district-name="${d.name}" data-state-name="${stateName}">
-        <span class="district">${d.name}</span>
-        <span class="state">${stateName}</span>
-      </div>
-    `).join('');
-
-    results.querySelectorAll('.search-result').forEach(el => {
-      el.addEventListener('click', () => {
-        selectDistrict({
-          districtId: el.getAttribute('data-district-id'),
-          districtName: el.getAttribute('data-district-name'),
-          stateName: el.getAttribute('data-state-name')
-        });
-      });
-    });
-  }
-
-  renderStates('');
-  input.addEventListener('input', (e) => {
-    renderStates(e.target.value);
-  });
-  setTimeout(() => input.focus(), 100);
-}
-
-// ===================================================================
-// FLOWS
-// ===================================================================
-
-async function startGpsFlow() {
-  const msg = document.getElementById('setupMsg');
-  if (!('geolocation' in navigator)) {
-    msg.innerHTML = '<div class="error-msg">Bu cihazda GPS desteklenmiyor. Manuel seç.</div>';
-    return;
-  }
-
-  showLoading('Konum alınıyor');
-  updateProgress(10);
-
-  let position;
-  try {
-    position = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: false,
-        timeout: 15000,
-        maximumAge: 300000
-      });
-    });
-  } catch(e) {
-    showSetup();
-    setTimeout(() => {
-      const m = document.getElementById('setupMsg');
-      if (m) m.innerHTML = '<div class="error-msg">Konum alınamadı: ' + (e.message || 'İzin verilmedi') + '<br>Manuel seçebilirsin.</div>';
-    }, 50);
-    return;
-  }
-
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
-
-  updateProgress(25);
-
-  // En yakın ili bul
-  const nearest = findNearestState(lat, lng);
-  showLoading('En yakın il: ' + nearest.name);
-
-  // İlleri çek (ya cache'ten ya yeni)
-  let states;
-  try {
-    updateProgress(40);
-    states = await fetchStates();
-  } catch(e) {
-    showSetup();
-    setTimeout(() => {
-      const m = document.getElementById('setupMsg');
-      if (m) m.innerHTML = '<div class="error-msg">İnternet hatası: ' + e.message + '</div>';
-    }, 50);
-    return;
-  }
-
-  // İl adına göre ID bul
-  const stateObj = states.find(s => s.name.toLocaleUpperCase('tr') === nearest.name);
-  if (!stateObj) {
-    showSetup();
-    setTimeout(() => {
-      const m = document.getElementById('setupMsg');
-      if (m) m.innerHTML = '<div class="error-msg">İl eşleştirilemedi. Manuel seç.</div>';
-    }, 50);
-    return;
-  }
-
-  updateProgress(55);
-  showLoading(nearest.name + ' ilçeleri yükleniyor');
-
-  let districts;
-  try {
-    districts = await fetchDistricts(stateObj._id);
-  } catch(e) {
-    showSetup();
-    setTimeout(() => {
-      const m = document.getElementById('setupMsg');
-      if (m) m.innerHTML = '<div class="error-msg">İlçe verisi alınamadı.</div>';
-    }, 50);
-    return;
-  }
-
-  updateProgress(70);
-
-  // Şimdi ilçelerin koordinatlarını bilmiyoruz. İlin merkezine göre en yakın ilçeyi seçmek
-  // pratik değil. Bu durumda: il adı ile aynı ismi taşıyan "merkez" ilçeyi bul, yoksa ilk ilçe.
-  // Kullanıcıya daha sonra istediği ilçeye geçme seçeneği var.
-  let districtObj = districts.find(d =>
-    d.name.toLocaleUpperCase('tr') === stateObj.name.toLocaleUpperCase('tr') ||
-    d.name.toLocaleUpperCase('tr') === 'MERKEZ'
-  );
-  if (!districtObj) districtObj = districts[0];
-
-  // Kullanıcıya sor: "X ilçesini seçtik, onaylar mısın ya da değiştirmek ister misin?"
-  // Ama ilk kurulum için direkt devam edelim, ilçe değiştirme butonu zaten var
-  await completeSetup({
-    districtId: districtObj._id,
-    districtName: districtObj.name,
-    stateName: stateObj.name,
-    lat: lat,
-    lng: lng
-  });
-}
-
-async function startManualFlow() {
-  showLoading('İl listesi yükleniyor');
-  try {
-    const states = await fetchStates();
-    states.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
-    showManualSearch(states);
-  } catch(e) {
-    showSetup();
-    setTimeout(() => {
-      const m = document.getElementById('setupMsg');
-      if (m) m.innerHTML = '<div class="error-msg">İl listesi alınamadı. İnternet var mı?</div>';
-    }, 50);
-  }
-}
-
-async function selectDistrict(loc) {
-  // loc: { districtId, districtName, stateName }
-  await completeSetup(loc);
-}
-
-async function completeSetup(loc) {
-  showLoading('Yıllık vakitler indiriliyor');
-  updateProgress(80);
-
-  try {
-    const rawData = await fetchYearlyTimes(loc.districtId);
-    updateProgress(95);
-
-    const yearData = processYearlyData(rawData);
-    const state = {
-      version: 2,
-      location: loc,
-      yearData: yearData,
-      lastUpdate: Date.now()
-    };
-    saveState(state);
-    updateProgress(100);
-
-    setTimeout(() => {
-      renderMain(state);
-    }, 300);
-  } catch(e) {
-    showSetup();
-    setTimeout(() => {
-      const m = document.getElementById('setupMsg');
-      if (m) m.innerHTML = '<div class="error-msg">Vakit verisi alınamadı: ' + e.message + '</div>';
-    }, 50);
-  }
-}
-
-// ===================================================================
-// ANA RENDER (OFFLINE ÇALIŞIR)
-// ===================================================================
-
-function renderMain(state) {
-  const loc = state.location;
-  const yd = state.yearData;
-  const now = new Date();
-
-  // Yıl geçtiyse kullanıcıyı uyar ama yine de son veriyi göster
-  if (now.getFullYear() !== yd.year) {
-    // Önce uyarı, sonra render
-    content.innerHTML = '<div class="error-msg">Veri ' + yd.year + ' yılına ait, şu an ' + now.getFullYear() + '. <br>Yeni yıl için "Güncelle" butonuna bas.</div>';
-  }
-
-  // Header
-  locationBar.classList.remove('hidden');
-  locationName.textContent = loc.districtName + ' · ' + loc.stateName;
-
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(today.getTime() + 86400000);
-  const yesterday = new Date(today.getTime() - 86400000);
-
-  const todayPT = getPrayerTimes(today, yd);
-  const tomorrowPT = getPrayerTimes(tomorrow, yd);
-  const yesterdayPT = getPrayerTimes(yesterday, yd);
-
-  if (!todayPT) {
-    content.innerHTML = '<div class="error-msg">Bu tarih için veri bulunamadı. "Güncelle" butonuna bas.</div>' +
-      '<button class="btn-primary" id="btnUpdate">Verileri Güncelle</button>';
-    document.getElementById('btnUpdate').addEventListener('click', () => completeSetup(loc));
-    return;
-  }
-
-  hijriDate.textContent = yd.hijri[keyFor(today)] || '';
-
-  // Teheccüd
-  let teh;
-  if (now < todayPT.fajr && yesterdayPT) {
-    teh = calcTeheccud(yesterdayPT, todayPT);
-  } else if (tomorrowPT) {
-    teh = calcTeheccud(todayPT, tomorrowPT);
-  } else {
-    teh = calcTeheccud(todayPT, todayPT);
-  }
-
-  // Current prayer
-  const current = findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT);
-  const next = findNextPrayer(now, todayPT, tomorrowPT);
-
-  // Countdown text
-  let countdownText;
-  const msToTeheccud = teh.lastThirdStart - now;
-  if (msToTeheccud > 0) {
-    countdownText = '<strong>' + formatDuration(msToTeheccud) + '</strong> kaldı';
-  } else if (now < teh.imsak) {
-    const msToImsak = teh.imsak - now;
-    countdownText = '⋆ Şu an faziletli vakit · İmsaka <strong>' + formatDuration(msToImsak) + '</strong>';
-  } else {
-    countdownText = 'Bir sonraki gece için bekleniyor';
-  }
-
-  // Current prayer card
-  let currentHTML = '';
-  if (current) {
-    const remainingMs = current.end - now;
-    currentHTML = `
-      <div class="current-prayer">
-        <div class="current-label"><span class="prayer-dot"></span> Şu an</div>
-        <div class="current-prayer-name">${current.name} vakti</div>
-        <div class="current-remaining">Çıkmasına <strong>${formatDuration(remainingMs)}</strong> var</div>
-        ${next ? `<div class="next-prayer-hint">Sonraki: ${next.name} · ${formatTime(next.time)}</div>` : ''}
-      </div>
-    `;
-  }
-
-  // Prayer list
-  const prayerList = [
-    { name: 'İmsak', time: todayPT.fajr, segmentName: 'Sabah' },
-    { name: 'Güneş', time: todayPT.sunrise, segmentName: 'Kerahat (Güneş)' },
-    { name: 'Öğle', time: todayPT.dhuhr, segmentName: 'Öğle' },
-    { name: 'İkindi', time: todayPT.asr, segmentName: 'İkindi' },
-    { name: 'Akşam', time: todayPT.maghrib, segmentName: 'Akşam' },
-    { name: 'Yatsı', time: todayPT.isha, segmentName: 'Yatsı' }
-  ];
-
-  let prayersHTML = '';
-  for (let i = 0; i < prayerList.length; i++) {
-    const p = prayerList[i];
-    const isActive = current && current.name === p.segmentName;
-    const nextTime = i < prayerList.length - 1 ? prayerList[i+1].time : (tomorrowPT ? tomorrowPT.fajr : null);
-    const isPassed = nextTime && now >= nextTime && !isActive;
-    const cls = 'prayer-row' + (isActive ? ' active' : '') + (isPassed ? ' passed' : '');
-    prayersHTML += `
-      <div class="${cls}">
-        <span class="prayer-name">${p.name}</span>
-        <span class="prayer-time">${formatTime(p.time)}</span>
-      </div>
-    `;
-  }
-
-  const dataAge = Math.floor((Date.now() - state.lastUpdate) / 86400000);
-
-  content.innerHTML = `
-    ${currentHTML}
-    <div class="card-main">
-      <div class="label">Son üçte bir · Başlangıç</div>
-      <div class="time-main">${pad(teh.lastThirdStart.getHours())}<span class="separator">:</span>${pad(teh.lastThirdStart.getMinutes())}</div>
-      <div class="sub-label">en faziletli teheccüd vakti</div>
-      <div class="countdown">${countdownText}</div>
-    </div>
-    <div class="window-info">
-      <div class="window-card"><div class="tag">Orta üçte bir</div><div class="val">${formatTime(teh.middleThirdStart)}</div></div>
-      <div class="window-card"><div class="tag">İmsaka kadar</div><div class="val">${formatTime(teh.imsak)}</div></div>
-    </div>
-    <div class="prayers">
-      <div class="prayers-title">${formatDateTR(now)}</div>
-      ${prayersHTML}
-    </div>
-    <button class="notify-btn" id="notifyBtn">Bildirim Kur</button>
-    <button class="btn-secondary" id="btnRefresh">Verileri Güncelle</button>
-    <div class="source-tag">Diyanet İşleri Başkanlığı · Çekildiği tarihten ${dataAge} gün önce<br>Tamamen offline çalışır</div>
-    <div class="hadith">
-      <div class="hadith-text">"Rabbimiz her gece, gecenin son üçte biri kaldığında dünya semasına iner ve şöyle buyurur:<br>— Kim bana dua ediyor, duasını kabul edeyim."</div>
-      <div class="hadith-source">Buhârî · Teheccüd 14</div>
-    </div>
-  `;
-
-  setupNotifications(teh);
-  document.getElementById('btnRefresh').addEventListener('click', () => {
-    if (confirm('Yeni vakit verisi indirilecek. İnternet gerekli. Devam?')) {
-      completeSetup(loc);
-    }
-  });
 }
 
 function calcTeheccud(todayPT, tomorrowPT) {
@@ -1299,9 +1277,7 @@ function findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT) {
     { name: 'Akşam', start: todayPT.maghrib, end: todayPT.isha },
     { name: 'Yatsı', start: todayPT.isha, end: tomorrowPT ? tomorrowPT.fajr : null }
   ];
-  for (const seg of segments) {
-    if (seg.end && now >= seg.start && now < seg.end) return seg;
-  }
+  for (const seg of segments) if (seg.end && now >= seg.start && now < seg.end) return seg;
   return null;
 }
 
@@ -1319,12 +1295,289 @@ function findNextPrayer(now, todayPT, tomorrowPT) {
   return null;
 }
 
+function renderTimes(state) {
+  const loc = state.location;
+  const yd = state.yearData;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today.getTime() + 86400000);
+  const yesterday = new Date(today.getTime() - 86400000);
+
+  const todayPT = getPrayerTimes(today, yd);
+  const tomorrowPT = getPrayerTimes(tomorrow, yd);
+  const yesterdayPT = getPrayerTimes(yesterday, yd);
+
+  if (!todayPT) {
+    content.innerHTML = '<div class="error-msg">Bu tarih için veri yok. "Güncelle" butonuna bas.</div><button class="btn-primary" id="btnRefresh">Verileri Güncelle</button>';
+    document.getElementById('btnRefresh').addEventListener('click', () => completeSetup(loc));
+    return;
+  }
+
+  hijriDate.textContent = yd.hijri[keyFor(today)] || '';
+
+  let teh;
+  if (now < todayPT.fajr && yesterdayPT) teh = calcTeheccud(yesterdayPT, todayPT);
+  else if (tomorrowPT) teh = calcTeheccud(todayPT, tomorrowPT);
+  else teh = calcTeheccud(todayPT, todayPT);
+
+  const current = findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT);
+  const next = findNextPrayer(now, todayPT, tomorrowPT);
+
+  let countdownText;
+  const msToTeheccud = teh.lastThirdStart - now;
+  if (msToTeheccud > 0) countdownText = '<strong>' + formatDuration(msToTeheccud) + '</strong> kaldı';
+  else if (now < teh.imsak) countdownText = '⋆ Şu an faziletli vakit · İmsaka <strong>' + formatDuration(teh.imsak - now) + '</strong>';
+  else countdownText = 'Bir sonraki gece için bekleniyor';
+
+  let currentHTML = '';
+  if (current) {
+    const remainingMs = current.end - now;
+    currentHTML = `
+      <div class="current-prayer">
+        <div class="current-label"><span class="prayer-dot"></span> Şu an</div>
+        <div class="current-prayer-name">${current.name} vakti</div>
+        <div class="current-remaining">Çıkmasına <strong>${formatDuration(remainingMs)}</strong> var</div>
+        ${next ? `<div class="next-prayer-hint">Sonraki: ${next.name} · ${formatTime(next.time)}</div>` : ''}
+      </div>
+    `;
+  }
+
+  const prayerList = [
+    { name: 'İmsak', time: todayPT.fajr, seg: 'Sabah' },
+    { name: 'Güneş', time: todayPT.sunrise, seg: 'Kerahat (Güneş)' },
+    { name: 'Öğle', time: todayPT.dhuhr, seg: 'Öğle' },
+    { name: 'İkindi', time: todayPT.asr, seg: 'İkindi' },
+    { name: 'Akşam', time: todayPT.maghrib, seg: 'Akşam' },
+    { name: 'Yatsı', time: todayPT.isha, seg: 'Yatsı' }
+  ];
+
+  let prayersHTML = '';
+  for (let i = 0; i < prayerList.length; i++) {
+    const p = prayerList[i];
+    const isActive = current && current.name === p.seg;
+    const nextTime = i < prayerList.length - 1 ? prayerList[i+1].time : (tomorrowPT ? tomorrowPT.fajr : null);
+    const isPassed = nextTime && now >= nextTime && !isActive;
+    const cls = 'prayer-row' + (isActive ? ' active' : '') + (isPassed ? ' passed' : '');
+    prayersHTML += `<div class="${cls}"><span class="prayer-name">${p.name}</span><span class="prayer-time">${formatTime(p.time)}</span></div>`;
+  }
+
+  const dataAge = Math.floor((Date.now() - state.lastUpdate) / 86400000);
+
+  content.innerHTML = `
+    ${currentHTML}
+    <div class="card-main">
+      <div class="label">Son üçte bir · Başlangıç</div>
+      <div class="time-main">${pad(teh.lastThirdStart.getHours())}<span class="separator">:</span>${pad(teh.lastThirdStart.getMinutes())}</div>
+      <div class="sub-label">en faziletli teheccüd vakti</div>
+      <div class="countdown">${countdownText}</div>
+    </div>
+    <div class="window-info">
+      <div class="window-card"><div class="tag">Orta üçte bir</div><div class="val">${formatTime(teh.middleThirdStart)}</div></div>
+      <div class="window-card"><div class="tag">İmsaka kadar</div><div class="val">${formatTime(teh.imsak)}</div></div>
+    </div>
+    <div class="prayers">
+      <div class="prayers-title">${formatDateTR(now)}</div>
+      ${prayersHTML}
+    </div>
+    <button class="notify-btn" id="notifyBtn">Bildirim Kur</button>
+    <button class="btn-secondary" id="btnRefresh">Verileri Güncelle</button>
+    <div class="source-tag">Diyanet İşleri Başkanlığı · ${dataAge} gün önce indirildi<br>Tamamen offline çalışır</div>
+    <div class="hadith">
+      <div class="hadith-text">"Rabbimiz her gece, gecenin son üçte biri kaldığında dünya semasına iner ve şöyle buyurur:<br>— Kim bana dua ediyor, duasını kabul edeyim."</div>
+      <div class="hadith-source">Buhârî · Teheccüd 14</div>
+    </div>
+  `;
+
+  setupNotifications(teh);
+  document.getElementById('btnRefresh').addEventListener('click', () => {
+    if (confirm('Yeni vakit verisi indirilecek. İnternet gerekli. Devam?')) completeSetup(loc);
+  });
+}
+
+// ===================================================================
+// KIBLE
+// ===================================================================
+
+let qiblaState = { bearing: null, heading: 0, orientationHandler: null, permGranted: false };
+
+function stopQiblaListeners() {
+  if (qiblaState.orientationHandler) {
+    window.removeEventListener('deviceorientation', qiblaState.orientationHandler);
+    window.removeEventListener('deviceorientationabsolute', qiblaState.orientationHandler);
+    qiblaState.orientationHandler = null;
+  }
+}
+
+function renderQibla(state) {
+  stopQiblaListeners();
+  hijriDate.textContent = '';
+
+  const userLat = state.userLat;
+  const userLng = state.userLng;
+
+  if (userLat == null || userLng == null) {
+    content.innerHTML = `
+      <div class="qibla-panel">
+        <div class="qibla-title">Kıble</div>
+        <div class="qibla-subtitle">Konum gerekli</div>
+        <div style="padding: 40px 20px; color: var(--ink-dim); line-height: 1.6;">
+          Kıble yönünü göstermek için GPS konumunu almam lazım.
+        </div>
+        <button class="btn-primary" id="btnQiblaGps" style="max-width: 280px; margin: 0 auto;">GPS ile Kıbleyi Bul</button>
+        <a href="https://qiblafinder.withgoogle.com/intl/tr" target="_blank" rel="noopener" style="display: block; margin-top: 20px; color: var(--gold); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; text-decoration: none;">Google Qibla Finder'ı Aç →</a>
+      </div>
+    `;
+    document.getElementById('btnQiblaGps').addEventListener('click', async () => {
+      try {
+        const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 15000 }));
+        const s = loadState();
+        s.userLat = pos.coords.latitude;
+        s.userLng = pos.coords.longitude;
+        saveState(s);
+        renderQibla(s);
+      } catch(e) {
+        alert('Konum alınamadı: ' + e.message);
+      }
+    });
+    return;
+  }
+
+  qiblaState.bearing = qiblaBearing(userLat, userLng);
+  const distKm = distance(userLat, userLng, KAABA_LAT, KAABA_LNG);
+
+  // Cardinal tick marks
+  let ticks = '';
+  for (let i = 0; i < 360; i += 15) {
+    ticks += `<div class="tick" style="transform: rotate(${i}deg); height: ${i % 90 === 0 ? 14 : i % 45 === 0 ? 10 : 6}px; opacity: ${i % 90 === 0 ? 0.6 : i % 45 === 0 ? 0.4 : 0.25};"></div>`;
+  }
+
+  content.innerHTML = `
+    <div class="qibla-panel">
+      <div class="qibla-title">Kıble</div>
+      <div class="qibla-subtitle">Telefonu düz tut · Altın işaret Kabe'dir</div>
+
+      <div class="compass-wrap">
+        <div class="compass-bg"></div>
+        <div class="compass-rose" id="compassRose">
+          <div class="cardinal n">K</div>
+          <div class="cardinal e">D</div>
+          <div class="cardinal s">G</div>
+          <div class="cardinal w">B</div>
+          ${ticks}
+          <div class="kaaba-marker" id="kaabaMarker" style="transform: rotate(${qiblaState.bearing}deg);">
+            <div class="kaaba-icon" id="kaabaIcon">🕋</div>
+          </div>
+        </div>
+        <div class="compass-arrow"></div>
+        <div class="compass-center"></div>
+      </div>
+
+      <div class="qibla-info">
+        Kıble yönü: <strong>${qiblaState.bearing.toFixed(1)}°</strong> · ${bearingToCardinal(qiblaState.bearing)}<br>
+        Kabe'ye uzaklık: <strong>${Math.round(distKm).toLocaleString('tr')}</strong> km
+      </div>
+
+      <div id="qiblaStatus" class="qibla-status">Pusula için izin gerekli</div>
+
+      <button class="btn-primary" id="btnEnableCompass" style="max-width: 280px; margin: 20px auto 10px;">Pusulayı Başlat</button>
+      <a href="https://qiblafinder.withgoogle.com/intl/tr" target="_blank" rel="noopener" style="display: block; color: var(--gold); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; text-decoration: none; margin-top: 8px;">Google AR Qibla Finder →</a>
+      <div style="font-size: 11px; color: var(--ink-dim); margin-top: 20px; line-height: 1.6; padding: 0 20px;">
+        İpucu: Pusula doğru çalışması için telefonu yatay tutup 8 şeklinde çevir (kalibrasyon için).
+      </div>
+    </div>
+  `;
+
+  const btn = document.getElementById('btnEnableCompass');
+  btn.addEventListener('click', startCompass);
+
+  // iOS'ta sayfa açılır açılmaz izin alınamaz — button click'i gerekiyor
+  // Ama izin daha önce verildiyse otomatik başlatabiliriz
+  if (qiblaState.permGranted) startCompass();
+}
+
+function bearingToCardinal(bearing) {
+  const dirs = ['Kuzey', 'Kuzeydoğu', 'Doğu', 'Güneydoğu', 'Güney', 'Güneybatı', 'Batı', 'Kuzeybatı', 'Kuzey'];
+  const idx = Math.round(bearing / 45);
+  return dirs[idx];
+}
+
+async function startCompass() {
+  const statusEl = document.getElementById('qiblaStatus');
+  const btn = document.getElementById('btnEnableCompass');
+
+  // iOS 13+ izin isteme
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    try {
+      const perm = await DeviceOrientationEvent.requestPermission();
+      if (perm !== 'granted') {
+        statusEl.textContent = 'İzin reddedildi';
+        return;
+      }
+    } catch(e) {
+      statusEl.textContent = 'İzin hatası: ' + e.message;
+      return;
+    }
+  }
+
+  qiblaState.permGranted = true;
+  statusEl.textContent = 'Pusula çalışıyor';
+  if (btn) btn.style.display = 'none';
+
+  const handler = (ev) => {
+    let heading = null;
+    // iOS: webkitCompassHeading (0 = kuzey, saat yönünde)
+    if (typeof ev.webkitCompassHeading === 'number') {
+      heading = ev.webkitCompassHeading;
+    } else if (ev.alpha != null) {
+      // Android/absolute: alpha (0 = kuzey, saat yönünün tersinde)
+      heading = 360 - ev.alpha;
+    }
+    if (heading == null) return;
+
+    qiblaState.heading = heading;
+    updateCompassRotation();
+  };
+
+  qiblaState.orientationHandler = handler;
+  // iOS: deviceorientation (webkitCompassHeading içerir)
+  window.addEventListener('deviceorientation', handler, true);
+  // Android: deviceorientationabsolute
+  window.addEventListener('deviceorientationabsolute', handler, true);
+}
+
+function updateCompassRotation() {
+  const rose = document.getElementById('compassRose');
+  const kaaba = document.getElementById('kaabaIcon');
+  const statusEl = document.getElementById('qiblaStatus');
+  if (!rose || qiblaState.bearing == null) return;
+
+  // Rose'u cihaz yönüne göre çevir: heading değeri telefonun hangi yöne baktığı
+  // Kuzeyi göstermek için -heading derece döndür
+  rose.style.transform = 'rotate(' + (-qiblaState.heading) + 'deg)';
+
+  // Kıbleye hizalanmış mı? Telefonun baktığı yön (heading) ile kıble açısı yakınsa
+  const diff = Math.abs(((qiblaState.bearing - qiblaState.heading + 540) % 360) - 180);
+  const aligned = diff < 5;
+
+  if (kaaba) {
+    if (aligned) kaaba.classList.add('qibla-aligned');
+    else kaaba.classList.remove('qibla-aligned');
+  }
+  if (statusEl) {
+    if (aligned) {
+      statusEl.textContent = '✓ Kıbleye bakıyorsun';
+      statusEl.classList.add('aligned');
+    } else {
+      statusEl.textContent = Math.round(diff) + '° sapma';
+      statusEl.classList.remove('aligned');
+    }
+  }
+}
+
 function setupNotifications(teh) {
   const btn = document.getElementById('notifyBtn');
   if (!btn) return;
-  if (!('Notification' in window)) {
-    btn.textContent = 'Bildirim Desteklenmiyor'; btn.disabled = true; return;
-  }
+  if (!('Notification' in window)) { btn.textContent = 'Bildirim Desteklenmiyor'; btn.disabled = true; return; }
   const key = 'teh_sched_' + teh.lastThirdStart.toISOString().slice(0,10);
   const scheduled = sessionStorage.getItem(key) === '1';
   if (Notification.permission === 'granted' && scheduled) {
@@ -1355,14 +1608,34 @@ function setupNotifications(teh) {
   });
 }
 
-// ===================================================================
-// INIT
-// ===================================================================
+function renderApp(state) {
+  stopQiblaListeners();
+  stopRenderInterval();
+  locationBar.classList.remove('hidden');
+  tabsEl.classList.remove('hidden');
+  locationName.textContent = state.location.districtName + ' · ' + state.location.stateName;
+
+  if (currentTab === 'times') {
+    renderTimes(state);
+    renderInterval = setInterval(() => { try { renderTimes(state); } catch(e) {} }, 30000);
+  } else if (currentTab === 'qibla') {
+    renderQibla(state);
+  }
+}
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = tab.getAttribute('data-tab');
+    const state = loadState();
+    if (state) renderApp(state);
+  });
+});
 
 document.getElementById('changeLocationBtn').addEventListener('click', () => {
-  if (confirm('Konumu değiştirmek için internet gerekli. Devam?')) {
-    showSetup();
-  }
+  if (confirm('Konumu değiştirmek için internet gerekli. Devam?')) showSetup();
 });
 
 function init() {
@@ -1372,13 +1645,10 @@ function init() {
     return;
   }
   try {
-    renderMain(state);
-    setInterval(() => {
-      try { renderMain(state); } catch(e) { console.error('Re-render:', e); }
-    }, 30000);
+    renderApp(state);
   } catch(e) {
-    console.error('Init error:', e);
-    content.innerHTML = '<div class="error-msg">Beklenmeyen hata: ' + e.message + '</div><button class="btn-primary" onclick="showSetup()">Yeniden Başlat</button>';
+    console.error('Init:', e);
+    showSetup('Beklenmeyen hata: ' + e.message);
   }
 }
 
