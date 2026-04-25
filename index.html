@@ -782,6 +782,26 @@ body::before {
   color: var(--green);
 }
 
+.compass-accuracy {
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.compass-accuracy::before {
+  content: '●';
+  margin-right: 8px;
+  font-size: 9px;
+  vertical-align: middle;
+}
+.compass-accuracy.good { color: var(--green); }
+.compass-accuracy.good::before { color: var(--green); }
+.compass-accuracy.medium { color: var(--gold-bright); }
+.compass-accuracy.medium::before { color: var(--gold-bright); }
+.compass-accuracy.poor { color: var(--red); }
+.compass-accuracy.poor::before { color: var(--red); }
+
 .hidden { display: none !important; }
 
 @media (max-width: 380px) {
@@ -903,6 +923,19 @@ function qiblaBearing(lat, lng) {
   const y = Math.sin(Δλ) * Math.cos(φ2);
   const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
   return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+// Açıların dairesel ortalaması — basit aritmetik ortalama 359°+1° için 180° verir (yanlış).
+// Her açıyı birim çember üzerinde (cos, sin) vektörüne çevir, vektörleri topla, atan2 ile geri çevir.
+function circularMean(angles) {
+  if (!angles.length) return 0;
+  let sumSin = 0, sumCos = 0;
+  for (const a of angles) {
+    const rad = a * Math.PI / 180;
+    sumSin += Math.sin(rad);
+    sumCos += Math.cos(rad);
+  }
+  return ((Math.atan2(sumSin, sumCos) * 180 / Math.PI) + 360) % 360;
 }
 
 // Türkiye 81 ilinin yaklaşık koordinatları
@@ -1411,7 +1444,14 @@ function renderTimes(state) {
 // KIBLE
 // ===================================================================
 
-let qiblaState = { bearing: null, heading: 0, orientationHandler: null, permGranted: false };
+let qiblaState = {
+  bearing: null,
+  heading: 0,
+  headingBuffer: [],   // son okumalar — circular mean için
+  accuracy: null,      // iOS webkitCompassAccuracy (derece, küçükse iyi). null = bilinmiyor.
+  orientationHandler: null,
+  permGranted: false
+};
 
 function stopQiblaListeners() {
   if (qiblaState.orientationHandler) {
@@ -1419,6 +1459,8 @@ function stopQiblaListeners() {
     window.removeEventListener('deviceorientationabsolute', qiblaState.orientationHandler);
     qiblaState.orientationHandler = null;
   }
+  qiblaState.headingBuffer = [];
+  qiblaState.accuracy = null;
 }
 
 function renderQibla(state) {
@@ -1491,6 +1533,7 @@ function renderQibla(state) {
       </div>
 
       <div id="qiblaStatus" class="qibla-status">Pusula için izin gerekli</div>
+      <div id="compassAccuracy" class="compass-accuracy hidden"></div>
 
       <button class="btn-primary" id="btnEnableCompass" style="max-width: 280px; margin: 20px auto 10px;">Pusulayı Başlat</button>
       <a href="https://qiblafinder.withgoogle.com/intl/tr" target="_blank" rel="noopener" style="display: block; color: var(--gold); font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; text-decoration: none; margin-top: 8px;">Google AR Qibla Finder →</a>
@@ -1533,6 +1576,8 @@ async function startCompass() {
   }
 
   qiblaState.permGranted = true;
+  qiblaState.headingBuffer = [];
+  qiblaState.accuracy = null;
   statusEl.textContent = 'Pusula çalışıyor';
   if (btn) btn.style.display = 'none';
 
@@ -1541,13 +1586,21 @@ async function startCompass() {
     // iOS: webkitCompassHeading (0 = kuzey, saat yönünde)
     if (typeof ev.webkitCompassHeading === 'number') {
       heading = ev.webkitCompassHeading;
+      // iOS pusula doğruluğu (derece). Küçük = hassas. Negatif = bilinmiyor / kalibrasyon gerek.
+      if (typeof ev.webkitCompassAccuracy === 'number') {
+        qiblaState.accuracy = ev.webkitCompassAccuracy;
+      }
     } else if (ev.alpha != null) {
       // Android/absolute: alpha (0 = kuzey, saat yönünün tersinde)
       heading = 360 - ev.alpha;
     }
     if (heading == null) return;
 
-    qiblaState.heading = heading;
+    // Son 8 okumayı kayar pencerede tut, circular mean ile yumuşat.
+    // Ham sensör değeri ±10-20° titrek; ortalama UI'ı sakinleştirir.
+    qiblaState.headingBuffer.push(heading);
+    if (qiblaState.headingBuffer.length > 8) qiblaState.headingBuffer.shift();
+    qiblaState.heading = circularMean(qiblaState.headingBuffer);
     updateCompassRotation();
   };
 
@@ -1562,6 +1615,7 @@ function updateCompassRotation() {
   const rose = document.getElementById('compassRose');
   const kaaba = document.getElementById('kaabaIcon');
   const statusEl = document.getElementById('qiblaStatus');
+  const accEl = document.getElementById('compassAccuracy');
   if (!rose || qiblaState.bearing == null) return;
 
   // Rose'u cihaz yönüne göre çevir: heading değeri telefonun hangi yöne baktığı
@@ -1583,6 +1637,28 @@ function updateCompassRotation() {
     } else {
       statusEl.textContent = Math.round(diff) + '° sapma';
       statusEl.classList.remove('aligned');
+    }
+  }
+
+  // Pusula doğruluğu — sadece iOS'ta webkitCompassAccuracy değeri gelirse gösterilir.
+  // Apple: değer derece cinsinden, küçük = hassas. Negatif = kalibrasyon gerek.
+  if (accEl) {
+    const acc = qiblaState.accuracy;
+    if (acc == null) {
+      accEl.classList.add('hidden');
+    } else {
+      accEl.classList.remove('hidden');
+      accEl.classList.remove('good', 'medium', 'poor');
+      if (acc < 0 || acc > 30) {
+        accEl.classList.add('poor');
+        accEl.textContent = 'Pusula zayıf · 8 şeklinde döndür';
+      } else if (acc > 15) {
+        accEl.classList.add('medium');
+        accEl.textContent = 'Pusula orta · ±' + Math.round(acc) + '°';
+      } else {
+        accEl.classList.add('good');
+        accEl.textContent = 'Pusula hassas · ±' + Math.round(acc) + '°';
+      }
     }
   }
 }
