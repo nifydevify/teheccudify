@@ -4,7 +4,7 @@
 
 ## Hızlı Özet
 
-**Tek dosyalık bir web uygulaması** (`teheccud.html`) — Türkiye'deki Müslüman kullanıcılara Diyanet İşleri Başkanlığı verisi ile namaz vakitleri ve özellikle **teheccüd vakti hesaplama** sunan PWA. iPhone'da Safari → "Ana Ekrana Ekle" ile bağımsız uygulama gibi çalışır.
+**Tek dosyalık bir web uygulaması** (`index.html`) — Türkiye'deki Müslüman kullanıcılara Diyanet İşleri Başkanlığı verisi ile namaz vakitleri ve özellikle **teheccüd vakti hesaplama** sunan PWA. iPhone'da Safari → "Ana Ekrana Ekle" ile bağımsız uygulama gibi çalışır.
 
 - **Live URL:** https://nifydevify.github.io/teheccudify/
 - **Hosting:** GitHub Pages (master/main branch root'undan servis)
@@ -23,7 +23,7 @@ Kullanıcının adı **Nify**. Kendisi:
 ## Mimari Kararlar (önemli — değiştirmeden önce nedenini sor)
 
 ### 1. Tek dosya yaklaşımı
-Tüm uygulama tek bir `teheccud.html` dosyasında — HTML, CSS, JS hepsi inline. **Sebep:** GitHub Pages'e zero-config deploy, Safari "Ana Ekrana Ekle" sorunsuz çalışsın, kullanıcı dosyayı tek başına bile kullanabilsin.
+Tüm uygulama tek bir `index.html` dosyasında — HTML, CSS, JS hepsi inline. **Sebep:** GitHub Pages'e zero-config deploy (root URL otomatik servis eder, dosya adı belirtmeye gerek yok), Safari "Ana Ekrana Ekle" sorunsuz çalışsın, kullanıcı dosyayı tek başına bile kullanabilsin.
 
 ### 2. Veri kaynağı: ezanvakti.imsakiyem.com
 Diyanet İşleri Başkanlığı verisini sunan üçüncü taraf bir API. Resmi Diyanet API'si (awqatsalah.diyanet.gov.tr) form başvurusu ve 5 istek limiti gerektirdiği için kullanılamadı.
@@ -58,7 +58,7 @@ API key gerektirmiyor, CORS açık. Rate limit: 5 dakikada 100 istek.
 ### 4. localStorage şeması
 ```js
 {
-  version: 4,
+  version: 3,
   location: { districtId, districtName, stateName, lat?, lng? },
   yearData: {
     year: 2026,
@@ -71,7 +71,7 @@ API key gerektirmiyor, CORS açık. Rate limit: 5 dakikada 100 istek.
 }
 ```
 
-Storage key: `teheccud_v4`. Versiyon değişirse eski state otomatik invalid olur ve setup tekrar tetiklenir.
+Storage key: `teheccud_v3`. Versiyon sadece **şema bozucu değişiklik** olduğunda bumplanır — bumplandığında eski state otomatik invalid olur ve setup tekrar tetiklenir, kullanıcı yıllık veriyi yeniden indirir. Bug fix gibi geriye uyumlu değişiklikler için bumplama (kullanıcı verisini boşuna silersin).
 
 ### 5. Kıble hesaplama
 - Kabe koordinatı: 21.4225, 39.8262
@@ -138,7 +138,7 @@ Kullanıcı **"benim istediğim bir tane var onu sana söyleyeceğim"** demişti
 
 ```bash
 # Değişiklik yap → commit → push
-git add teheccud.html
+git add index.html
 git commit -m "açıklayıcı mesaj"
 git push origin main
 ```
@@ -150,7 +150,7 @@ GitHub Pages otomatik 1-2 dakika içinde yayınlar. Cache temizlemek için kulla
 Kullanıcı seninle ilk konuştuğunda projeye hızlıca dahil olduğunu göster:
 - "Selam Nify kral, projeyi okudum, hazırım."
 - Hangi konu üzerinde çalışmak istediğini sor.
-- Önce mevcut `teheccud.html` dosyasını oku (`view` veya `cat teheccud.html`), kodu anla, sonra değişiklik yap.
+- Önce mevcut `index.html` dosyasını oku (`view` veya `cat index.html`), kodu anla, sonra değişiklik yap.
 
 ## Önemli Notlar
 
