@@ -95,7 +95,34 @@ GPS akışında ilçeyi doğru tespit etmek için Nominatim'e reverse geocode is
 - **Rate limit:** Nominatim 1 req/sec; setup nadir yapıldığı için sorun değil.
 - **UX:** Match olursa belirgin yeşil onay kartı ("Konum tespit edildi · Çekmeköy · Evet, devam et / Hayır, listeden seçeyim"). "Evet" → tek tıkla setup. "Hayır" → ilçe listesi.
 
-### 8. Kerahat vakitleri
+### 8. Bildirim sistemi (.ics export)
+
+Kullanıcı arka plan bildirim derdine ana çözüm: **vakit-bazlı kural tanımı + yıllık `.ics` export**, kullanıcı dosyayı iPhone Takvimi'ne import eder, takvim native bildirim sistemini kullanır. Sunucu yok, gizlilik bozulmuyor.
+
+**Kural şeması (`state.notifyRules`):**
+```js
+[{ id: 'rXXXXX', prayer: 'imsak'|'gunes'|'ogle'|'ikindi'|'aksam'|'yatsi'|'teheccud', offset: -40 /* dk; negatif=önce, pozitif=sonra */ }]
+```
+
+**ICS üretimi (`buildIcs(state)`):**
+- `yearData.times` üzerinde iterate, her gün × her aktif kural = bir `VEVENT`.
+- `getRuleAnchor(prayer, date, yearData)` o günün vakit Date'ini döner. `'teheccud'` özel: ertesi günün imsakı yoksa null, `calcTeheccud(...).lastThirdStart` kullanılır.
+- `turkeyToUTC(date)` Türkiye yerel saatini (UTC+3 sabit, DST yok) UTC'ye çevirir; ICS'e `YYYYMMDDTHHMMSSZ` formatında yazılır. Kullanıcı yurt dışında bile olsa Türkiye'ye denk gelen anda hatırlatır.
+- Her event'te `VALARM ACTION:DISPLAY TRIGGER:PT0M DURATION:PT1M REPEAT:2` — bildirim 1 dk arayla 3 kez (orijinal + 2 tekrar) gelir. iOS Takvim REPEAT'i destekler.
+- Deterministik UID: `teh-{YYYYMMDD}-{ruleId}@teheccudify`. Aynı kullanıcı yeni .ics import edince eski event'lerin UID'leri değişmediği için takvim güncelleyebilir (ama kural ID değişirse yeni UID olur ve duplicate olur — kullanıcıya "eski takvimi sil" rehberi gösteriliyor).
+- RFC 5545 escape: `icsEscape()` backslash, virgül, noktalı virgül, newline kaçırır. Satır folding gerekmiyor (her satır <75 oktet).
+- Geçmiş günler atlanır (`targetUTC < Date.now() - 1h`).
+
+**UX kararları:**
+- 3. tab "Bildirim" — `renderNotify(state)`.
+- Kural ekleme formu: vakit dropdown + önce/sonra select + dakika input. Aynı kuralın duplicate'i engelleniyor. Listede vakit sırası + offset'e göre sıralanır.
+- "Takvime Aktar" butonu — `Blob` + `URL.createObjectURL` ile dosya indirme.
+- **Dürüst rehber kart:** "Bu Saat alarmı değil, Takvim bildirimidir. Sessize alınınca çalmaz." Ayrıca `Ayarlar > Bildirimler > Takvim > Sesler aç + Banner Stili: Sürekli` adımları. Sessizde garantili alarm için iPhone Saat uygulaması yönlendirmesi (Apple programatik Saat alarmı kurmaya izin vermiyor; bunu kabullenip dürüstçe söylemek doğru yaklaşım).
+- `completeSetup` lokasyon değişiminde `notifyRules`'ı korur (kullanıcı kurallarını kaybetmesin); ama yeni .ics indirip eski takvimi silmesi gerekir, açıklama UI'da yazılı.
+
+**Eski "Bildirim Kur" butonu Vakitler sekmesinde duruyor** — sayfa açıkken çalışan tek seferlik teheccüd hatırlatıcısı. Yeni .ics sistemi bunu süpersettir ama buton kalsın çünkü "şu an kurmak istiyorum" senaryosu hâlâ geçerli. notify-hint metni kullanıcıyı Bildirim sekmesine yönlendiriyor.
+
+### 9. Kerahat vakitleri
 Hanefî mezhebine göre namazın haram/şiddetle mekruh olduğu üç vakit hesaplanır. Süreler **yaklaşık** değerlerdir (alimler arasında ufak farklar var); kodda sabit olarak tanımlı, ihtiyatlı seçildi:
 - `KERAHAT_SUNRISE_MIN = 45` — Güneş doğumundan sonra mızrak boyu yükselene kadar
 - `KERAHAT_ISTIVA_MIN = 10` — Öğle vakti girmeden önce (zeval/istiva, güneş tepe noktasında)
@@ -110,14 +137,10 @@ Hanefî mezhebine göre namazın haram/şiddetle mekruh olduğu üç vakit hesap
 
 **Yan etki:** Eski `findCurrentPrayer` segment ismi `'Kerahat (Güneş)'` (sunrise → dhuhr) → `'Kuşluk'` olarak düzeltildi. Eski etiket yanıltıcıydı çünkü gerçek kerahat sadece ilk 45 dk; gerisi duha/kuşluk vakti, nafile namaza açık. `prayerList[].seg` haritalaması da `'Kuşluk'` olarak güncellendi (ikisi tutarlı olmalı).
 
-### 9. Bildirim sistemi sınırlı
-**Mevcut:** `Notification` API + `setTimeout` — sadece uygulama açıkken çalışır. Sayfa kapanınca timer ölür.
+### 10. Web Push neden eklenmedi (referans)
+iOS 16.4+ web push destekliyor ama VAPID anahtarı + push sunucusu (FCM/APNs) gerekir. Bu proje GitHub Pages'da sunucusuz host ediliyor; backend yok. OneSignal/Firebase gibi 3. taraf servis eklemek hem proje sadelik felsefesine ters hem de gizlilik politikasını bozar ("hiçbir sunucuya kullanıcı verisi gönderilmez" sözünü). `.ics` export çözümü (Bölüm 8) bu kısıtla yaşamanın yolu — sunucu gerektirmiyor, alarm yine native takvim üzerinden çalışıyor.
 
-**Neden gerçek arka plan bildirim yok:** iOS 16.4+ web push destekliyor ama VAPID anahtarı + push sunucusu (FCM/APNs) gerekir. Bu proje GitHub Pages'da sunucusuz olarak host ediliyor; backend yok. OneSignal/Firebase gibi 3. taraf servis eklemek hem proje sadelik felsefesine ters hem de gizlilik politikasını bozar (README'de "hiçbir sunucuya kullanıcı verisi gönderilmez" diye yazıyor).
-
-**UX kararı:** Butonun altında dürüst not (`.notify-hint`): "Bildirim sadece uygulama açıkken çalışır. Garantiye almak için iOS Saat alarmı kurabilirsin." Kullanıcıya yanlış beklenti yaratmıyoruz.
-
-**Açık iş listesindeki "Service Worker" maddesi:** SW eklemek offline cache'i iyileştirir ama bildirim sorununu çözmez (push olmadan SW uyutulur).
+**Service Worker eklemek** offline cache'i iyileştirir ama bildirim sorununu **çözmez** (push olmadan SW uyutulur). SW konusu açık iş listesinde duruyor; sadece offline UX'i için.
 
 ## Çözülen Önemli Problemler
 
@@ -155,7 +178,7 @@ Hanefî mezhebine göre namazın haram/şiddetle mekruh olduğu üç vakit hesap
 
 ### Problem 9: "Kerahat (Güneş)" etiketi sabah-öğle arası tüm vakti yanlış kapsıyordu
 **Sorun:** `findCurrentPrayer` segments dizisinde `{ name: 'Kerahat (Güneş)', start: sunrise, end: dhuhr }` vardı. Kullanıcı "Şu an" kartında öğleye kadar 4-5 saat boyunca "Kerahat (Güneş) vakti" görüyordu — halbuki gerçek kerahat sadece güneş doğumundan sonra ~45 dk; gerisi kuşluk vakti, namaza açık.
-**Çözüm:** Segment ismi `'Kuşluk'` olarak değiştirildi. Gerçek kerahat hesabı ayrı bir katman olarak `getKerahatWindows()` ile yapılıyor (Bölüm 8). `prayerList[].seg` mapping de `'Kuşluk'` olarak güncellendi (segments ile match tutması için).
+**Çözüm:** Segment ismi `'Kuşluk'` olarak değiştirildi. Gerçek kerahat hesabı ayrı bir katman olarak `getKerahatWindows()` ile yapılıyor (Bölüm 9). `prayerList[].seg` mapping de `'Kuşluk'` olarak güncellendi (segments ile match tutması için).
 
 ### Problem 10: Yıl son günü öğleden sonra teheccüd vakti saçmalıyordu
 **Sorun:** `tomorrowPT` yoksa (örn. 31 Aralık öğleden sonra, 2027 verisi henüz yok), `renderTimes` fallback olarak `calcTeheccud(todayPT, todayPT)` çağırıyordu. Bu durumda `nightMs = todayPT.fajr - todayPT.maghrib` negatif çıkıyor (~-12 saat), `lastThirdStart` saçma değer veriyordu (örn. öğleden sonra 10:00 sabah).
@@ -165,13 +188,27 @@ Hanefî mezhebine göre namazın haram/şiddetle mekruh olduğu üç vakit hesap
 **Sorun:** `startCompass` her çağrıldığında `DeviceOrientationEvent.requestPermission()` çağırıyordu. Tab geçişinde `renderQibla` `qiblaState.permGranted` true ise `startCompass`'i otomatik tetikliyor — bu user gesture dışında oluyor. iOS'ta `requestPermission` user gesture dışında exception fırlatır; catch bloğu kullanıcıya yanlışlıkla "İzin hatası" mesajı yazar.
 **Çözüm:** `requestPermission` çağrısının başına `!qiblaState.permGranted` koşulu eklendi. İzin bir kez alındıktan sonra tab geçişinde tekrar sorulmaz.
 
+### Problem 12: PWA kapalıyken bildirim gelmiyordu
+**Sorun:** Eski "Bildirim Kur" butonu sadece `Notification` API + `setTimeout` kullanıyordu. Sayfa kapanınca timer ölüyor, kullanıcı uygulamayı arka planda kapatınca hatırlatma hiç gelmiyordu. Web Push çözümü için sunucu (VAPID + FCM/APNs proxy) gerekli; bu projenin "sunucusuz, gizli" felsefesini bozuyor.
+**Çözüm:** **Bildirim sekmesi + `.ics` export** (Bölüm 8). Kullanıcı vakit-bazlı kurallar tanımlar, 365 günlük .ics dosyasını iPhone Takvimi'ne import eder; takvim native bildirim sistemini kullanarak uygulama kapalıyken bile alarmı çalar. Sunucu gerektirmez, gizlilik bozulmaz.
+
+### Problem 13: Takvim "alarm"ının Saat alarmı sanılması (beklenti netliği)
+**Sorun:** İlk commit'te kullanıcıya "Takvim alarmı uygulama kapalıyken bile çalar" denildi. Test edince kullanıcı: "alarm çalmıyor sadece bildirim olarak geliyor." Çünkü iOS Takvim'in `VALARM`'ı bildirim kanalını kullanır — Saat alarmı gibi sessize alınmış telefonda çığlık atan bir şey **değildir**. Apple bunu programatik olarak yapmaya izin vermiyor (Saat alarmı sadece elle kurulur).
+**Çözüm:**
+- `VALARM`'a `REPEAT:2 + DURATION:PT1M` eklendi → bildirim 1 dk arayla 3 kez gelir, kaçırma şansı azalır.
+- UI'da dürüst not: "Bu Saat alarmı değil, Takvim bildirimidir. Sessize alınınca çalmaz."
+- Rehberde adım: `Ayarlar > Bildirimler > Takvim > Sesler aç + Banner Stili: Sürekli`. Çoğu kullanıcıda bu varsayılan kapalıdır.
+- Sessizde garantili çalan alarm için iPhone Saat uygulaması yönlendirmesi.
+
+**Ders:** Beklentiyi over-promise etme. "Bu çözüm şunu yapmaz" demeyi "şunu yapar" demek kadar net yaz.
+
 ## Açık İşler / Yapılabilecek Geliştirmeler
 
 Kullanıcı sırasıyla şunlar üzerinde çalışmak isteyebilir (bunları kullanıcı **istediğinde** yap, kendiliğinden başlatma):
 
-1. **Bildirim sistemi iyileştirme** — Şu an sadece sayfa açıkken `setTimeout` ile çalışıyor. iOS Safari PWA'larda gerçek push notification 16.4+ destekliyor ama service worker gerekiyor, henüz eklenmedi.
-2. **Service worker eklemek** — Tam offline + arka plan bildirim için.
-3. **Yıl geçişi otomasyonu** — Şu an 2026 verisi var, 2027 için manuel güncelleme gerekiyor. Yıl geçince otomatik refresh yapılabilir.
+1. **Bildirim sistemi v2** — `.ics` export çözümü eklendi (Bölüm 8). Geliştirme alanları: kullanıcı kuralları kurduğunda otomatik .ics yenileme hatırlatması, lokasyon değişiminde "yeni .ics indir + eskiyi sil" akışını otomatikleştirme, multi-konum kuralları.
+2. **Service worker eklemek** — Tam offline cache için (font fallback, ikinci-el ziyarette anında açılış). Push bildirim **çözmez** çünkü sunucu yok.
+3. **Yıl geçişi otomasyonu** — Şu an 2026 verisi var, 2027 için manuel güncelleme gerekiyor. Yıl geçince otomatik refresh yapılabilir. Aynı zamanda yeni .ics dosyasının da yeniden indirilmesi gerek (kullanıcıya hatırlatma).
 4. **Çoklu konum kaydetme** — Şu an tek konum saklıyor, ama kullanıcı seyahatte ise "Çekmeköy" + "Ankara" + "Mekke" gibi birden fazla saklamak isteyebilir.
 5. **Tasbih/sayaç sekmesi** — Kullanıcı henüz istemedi ama olası bir feature.
 6. **Hatim takibi** — Kullanıcı henüz istemedi ama olası bir feature.

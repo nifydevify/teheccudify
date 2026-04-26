@@ -14,7 +14,8 @@ Türkiye'deki Müslümanlar için Diyanet İşleri Başkanlığı verisiyle nama
 - **Kerahat vakti uyarısı:** Hanefî mezhebine göre namazın kılınmadığı üç vakti (güneş doğumu sonrası, istiva, güneş batımı) hesaplar. Üç katmanlı uyarı: o an kerahatteysen kırmızı banner, 15 dk içinde kerahat başlayacaksa altın "yaklaşıyor" uyarısı, ayrıca bugünün tüm kerahat pencereleri listelenir.
 - **Kıble pusulası:** GPS + telefon sensörüyle Kabe yönünü gösterir, telefon kıbleye dönünce yeşil parıldar.
 - **Hicri tarih** her gün otomatik güncellenir.
-- **Bildirim kurma:** Teheccüd vakti gelince hatırlatma. Sadece uygulama açıkken çalışır (sunucusuz PWA olduğu için iOS arka plan bildirim mümkün değil); garantiye almak için iOS Saat uygulamasından alarm kurmanız önerilir.
+- **Bildirim ayarları (vakit-bazlı alarm):** Bildirim sekmesinden her vakit (imsak, güneş, öğle, ikindi, akşam, yatsı, teheccüd) için "önce/sonra X dakika" ofsetiyle alarm kuralı tanımlarsın. "Takvime Aktar" ile 365 günlük `.ics` dosyası indirip iPhone Takvimi'ne eklersin — uygulama kapalıyken bile bildirim çalar (1 dk arayla 3 kez tekrar). Not: Takvim bildirimi Saat alarmı değildir, sessize alınmış telefonda çalmaz; sessizde de çalan gerçek alarm için iPhone Saat uygulaması kullanılmalıdır.
+- **Anlık bildirim:** Vakitler sekmesindeki "Bildirim Kur" butonu, uygulama açıkken o gece için teheccüd vakti hatırlatması koyar (sayfa kapanınca geçersiz olur — kalıcı alarm için yukarıdaki .ics yöntemi).
 
 ## Neden Var?
 
@@ -50,6 +51,7 @@ Tarayıcıda direkt aç, browser sekmesi olarak kullan.
 | Kıble | Great-circle bearing formülüyle Kabe yönü; cihaz pusulasıyla eşleşir |
 | Pusula yumuşatma | 8 örneklik dairesel ortalama — sensör titremesine karşı |
 | Kerahat | Hanefî mezhebine göre üç vakit hesaplanır: güneş doğumu sonrası 45 dk, istivaya 10 dk, güneş batışına 40 dk |
+| Bildirim | Kullanıcı kuralları → 365 günlük `.ics` (RFC 5545 / iCalendar). Türkiye saati (UTC+3 sabit, DST yok) UTC olarak yazılır. `VALARM REPEAT:2 + DURATION:PT1M` ile 1 dk arayla 3 tekrar |
 | Tema | Koyu altın, Cormorant Garamond + Jost fontları |
 
 ## Teknoloji
