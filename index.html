@@ -560,6 +560,107 @@ body::before {
   color: var(--gold-deep);
 }
 
+/* Kerahat vakti — namaz kılınmayan vakitler için uyarı */
+.kerahat-warning {
+  background: linear-gradient(180deg, rgba(212, 117, 117, 0.18) 0%, rgba(212, 117, 117, 0.04) 100%);
+  border: 1px solid rgba(212, 117, 117, 0.4);
+  padding: 18px 22px;
+  margin-bottom: 16px;
+  text-align: center;
+  border-radius: 2px;
+  position: relative;
+}
+.kerahat-warning::before, .kerahat-warning::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--red);
+  opacity: 0.5;
+}
+.kerahat-warning::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.kerahat-warning::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.kerahat-warning-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.kerahat-warning-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.kerahat-warning-sub {
+  font-size: 13px;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.kerahat-warning-sub strong { color: var(--red); font-weight: 500; }
+
+.kerahat-list {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--line);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.kerahat-list-title {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.kerahat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.kerahat-row:last-of-type { border-bottom: none; }
+
+.kerahat-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--ink-dim);
+}
+
+.kerahat-time {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.kerahat-row.active .kerahat-name,
+.kerahat-row.active .kerahat-time { color: var(--red); }
+.kerahat-row.passed { opacity: 0.4; }
+
+.kerahat-note {
+  font-size: 10px;
+  color: var(--ink-dim);
+  text-align: center;
+  margin-top: 12px;
+  font-style: italic;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
 .error-msg {
   padding: 14px;
   background: rgba(212, 117, 117, 0.08);
@@ -1456,6 +1557,31 @@ function getPrayerTimes(date, yearData) {
   };
 }
 
+// Kerahat vakitleri — Hanefî mezhebine göre namazın haram/şiddetle mekruh
+// olduğu üç vakit. Süreler yaklaşık değerlerdir; ihtiyatlı seçildi.
+//   1. Güneş doğumu sonrası (~45 dk, mızrak boyu yükselene kadar)
+//   2. İstiva / zeval (öğleye ~10 dk kala, güneş tepe noktasında)
+//   3. Güneş sararması (akşama ~40 dk kala, güneş batmaya yaklaşırken)
+const KERAHAT_SUNRISE_MIN = 45;
+const KERAHAT_ISTIVA_MIN = 10;
+const KERAHAT_GURUB_MIN = 40;
+
+function getKerahatWindows(pt) {
+  return [
+    { name: 'Güneş doğumu', start: pt.sunrise,
+      end: new Date(pt.sunrise.getTime() + KERAHAT_SUNRISE_MIN * 60000) },
+    { name: 'İstiva (zeval)', start: new Date(pt.dhuhr.getTime() - KERAHAT_ISTIVA_MIN * 60000),
+      end: pt.dhuhr },
+    { name: 'Güneş batımı', start: new Date(pt.maghrib.getTime() - KERAHAT_GURUB_MIN * 60000),
+      end: pt.maghrib }
+  ];
+}
+
+function findActiveKerahat(now, windows) {
+  for (const w of windows) if (now >= w.start && now < w.end) return w;
+  return null;
+}
+
 function calcTeheccud(todayPT, tomorrowPT) {
   const maghrib = todayPT.maghrib;
   const fajr = tomorrowPT.fajr;
@@ -1472,9 +1598,12 @@ function findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT) {
   if (yesterdayPT && now < todayPT.fajr) {
     return { name: 'Yatsı', start: yesterdayPT.isha, end: todayPT.fajr };
   }
+  // Not: Kerahat vakitleri ayrı bir katmanda gösteriliyor; buradaki "Kuşluk"
+  // güneş doğumundan öğleye kadarki tüm zaman dilimini kapsar (kerahat dışında
+  // duha/kuşluk namazı kılınabilir).
   const segments = [
     { name: 'Sabah', start: todayPT.fajr, end: todayPT.sunrise },
-    { name: 'Kerahat (Güneş)', start: todayPT.sunrise, end: todayPT.dhuhr },
+    { name: 'Kuşluk', start: todayPT.sunrise, end: todayPT.dhuhr },
     { name: 'Öğle', start: todayPT.dhuhr, end: todayPT.asr },
     { name: 'İkindi', start: todayPT.asr, end: todayPT.maghrib },
     { name: 'Akşam', start: todayPT.maghrib, end: todayPT.isha },
@@ -1534,11 +1663,24 @@ function renderTimes(state) {
   const current = findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT);
   const next = findNextPrayer(now, todayPT, tomorrowPT);
 
+  // Kerahat hesabı — bugünün 3 penceresi + şu an aktif olan
+  const kerahatWindows = getKerahatWindows(todayPT);
+  const activeKerahat = findActiveKerahat(now, kerahatWindows);
+
   let countdownText;
   const msToTeheccud = teh.lastThirdStart - now;
   if (msToTeheccud > 0) countdownText = '<strong>' + formatDuration(msToTeheccud) + '</strong> kaldı';
   else if (now < teh.imsak) countdownText = '⋆ Şu an faziletli vakit · İmsaka <strong>' + formatDuration(teh.imsak - now) + '</strong>';
   else countdownText = 'Bir sonraki gece için bekleniyor';
+
+  // Kerahat aktifse en üstte belirgin uyarı kartı göster
+  const kerahatWarningHTML = activeKerahat ? `
+    <div class="kerahat-warning">
+      <div class="kerahat-warning-label">⚠ Kerahat vakti</div>
+      <div class="kerahat-warning-name">${activeKerahat.name}</div>
+      <div class="kerahat-warning-sub">Namaz kılınmaz · Çıkışına <strong>${formatDuration(activeKerahat.end - now)}</strong> var</div>
+    </div>
+  ` : '';
 
   let currentHTML = '';
   if (current) {
@@ -1553,9 +1695,24 @@ function renderTimes(state) {
     `;
   }
 
+  // Kerahat penceleri listesi — geçenler soluk, aktif olan kırmızı
+  const kerahatRowsHTML = kerahatWindows.map(w => {
+    const isActive = now >= w.start && now < w.end;
+    const isPast = now >= w.end;
+    const cls = 'kerahat-row' + (isActive ? ' active' : '') + (isPast ? ' passed' : '');
+    return `<div class="${cls}"><span class="kerahat-name">${w.name}</span><span class="kerahat-time">${formatTime(w.start)} → ${formatTime(w.end)}</span></div>`;
+  }).join('');
+  const kerahatListHTML = `
+    <div class="kerahat-list">
+      <div class="kerahat-list-title">Kerahat Vakitleri</div>
+      ${kerahatRowsHTML}
+      <div class="kerahat-note">Bu vakitlerde namaz kılınmaz (Hanefî). Süreler yaklaşık değerlerdir.</div>
+    </div>
+  `;
+
   const prayerList = [
     { name: 'İmsak', time: todayPT.fajr, seg: 'Sabah' },
-    { name: 'Güneş', time: todayPT.sunrise, seg: 'Kerahat (Güneş)' },
+    { name: 'Güneş', time: todayPT.sunrise, seg: 'Kuşluk' },
     { name: 'Öğle', time: todayPT.dhuhr, seg: 'Öğle' },
     { name: 'İkindi', time: todayPT.asr, seg: 'İkindi' },
     { name: 'Akşam', time: todayPT.maghrib, seg: 'Akşam' },
@@ -1576,6 +1733,7 @@ function renderTimes(state) {
   const dataAgeText = dataAgeDays === 0 ? 'bugün indirildi' : dataAgeDays + ' gün önce indirildi';
 
   content.innerHTML = `
+    ${kerahatWarningHTML}
     ${currentHTML}
     <div class="card-main">
       <div class="label">Son üçte bir · Başlangıç</div>
@@ -1591,6 +1749,7 @@ function renderTimes(state) {
       <div class="prayers-title">${formatDateTR(now)}</div>
       ${prayersHTML}
     </div>
+    ${kerahatListHTML}
     <button class="notify-btn" id="notifyBtn">Bildirim Kur</button>
     <button class="btn-secondary" id="btnRefresh">Verileri Güncelle</button>
     <div class="source-tag">Diyanet İşleri Başkanlığı · ${dataAgeText}<br>Tamamen offline çalışır</div>
