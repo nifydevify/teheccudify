@@ -572,6 +572,77 @@ body::before {
   line-height: 1.5;
 }
 
+/* GPS ile bulunan ilçenin onay kartı */
+.match-card {
+  background: linear-gradient(180deg, rgba(127, 181, 127, 0.12) 0%, rgba(127, 181, 127, 0.03) 100%);
+  border: 1px solid rgba(127, 181, 127, 0.35);
+  padding: 28px 24px;
+  margin: 16px 0;
+  text-align: center;
+  border-radius: 2px;
+  position: relative;
+}
+.match-card::before, .match-card::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--green);
+  opacity: 0.5;
+}
+.match-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.match-card::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+.match-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.match-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+.match-sub {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 22px;
+}
+.match-actions {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+.match-yes, .match-no {
+  width: 100%;
+  padding: 14px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  font-weight: 500;
+}
+.match-yes {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+.match-yes:active { background: var(--green); color: var(--bg); }
+.match-no {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+}
+.match-no:active { background: rgba(255, 255, 255, 0.02); }
+
 .loading-box {
   text-align: center;
   padding: 60px 20px;
@@ -886,6 +957,51 @@ async function fetchYearlyTimes(districtId) {
   return json.data;
 }
 
+// Nominatim (OpenStreetMap) reverse geocoding — GPS koordinatından ilçe ismini bulur.
+// zoom=12 ilçe seviyesi. address.town Türkiye için en güvenilir alan; alternatifler fallback.
+// Hata durumunda null döner — çağıran taraf eski "MERKEZ" tabanlı zayıf öneriye düşer.
+async function reverseGeocodeDistrict(lat, lng) {
+  try {
+    const url = 'https://nominatim.openstreetmap.org/reverse?lat=' + lat +
+                '&lon=' + lng + '&format=jsonv2&accept-language=tr&zoom=12';
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const a = data.address || {};
+    return a.town || a.city_district || a.county || a.municipality || a.village || null;
+  } catch(e) {
+    return null;
+  }
+}
+
+// İlçe ismi normalizasyonu — Türkçe karakter, büyük/küçük, boşluk farklarını eler.
+// Nominatim "Çekmeköy" döner, API "ÇEKMEKÖY" tutar; bazı API isimleri ASCII (örn. "ARNAVUTKOY").
+function normalizeDistrictName(name) {
+  if (!name) return '';
+  return name
+    .toLocaleLowerCase('tr')
+    .replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i')
+    .replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function findDistrictByName(targetName, districts) {
+  if (!targetName) return null;
+  const n = normalizeDistrictName(targetName);
+  if (!n) return null;
+  let match = districts.find(d => normalizeDistrictName(d.name) === n);
+  if (match) return match;
+  // Ön ek eşleşmesi — "Çekmeköy" ↔ "Çekmeköy Merkez" gibi durumlar için.
+  match = districts.find(d => {
+    const dn = normalizeDistrictName(d.name);
+    return dn && (dn.startsWith(n) || n.startsWith(dn));
+  });
+  return match || null;
+}
+
 function pad(n) { return String(n).padStart(2, '0'); }
 
 function processYearlyData(apiData) {
@@ -1026,13 +1142,43 @@ function showSetup(errorMsg) {
   document.getElementById('btnManual').addEventListener('click', startManualFlow);
 }
 
-function showDistrictPicker(stateObj, districts, autoSelectedName, lat, lng) {
+function showDistrictPicker(stateObj, districts, autoSelectedName, lat, lng, matchedDistrict) {
   stopRenderInterval();
   locationBar.classList.add('hidden');
   tabsEl.classList.add('hidden');
   hijriDate.textContent = '';
 
   districts.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+
+  // GPS + Nominatim ile ilçe doğru tespit edildiyse önce onay kartı göster.
+  // "Evet" tek tıkla setup, "Hayır" derse aşağıdaki picker'a düşer.
+  if (matchedDistrict) {
+    content.innerHTML = `
+      <div class="match-card">
+        <div class="match-label">Konum tespit edildi</div>
+        <div class="match-name">${matchedDistrict.name}</div>
+        <div class="match-sub">${stateObj.name}</div>
+        <div class="match-actions">
+          <button class="match-yes" id="matchYes">Evet, devam et</button>
+          <button class="match-no" id="matchNo">Hayır, listeden seçeyim</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('matchYes').addEventListener('click', () => {
+      completeSetup({
+        districtId: matchedDistrict._id,
+        districtName: matchedDistrict.name,
+        stateName: stateObj.name,
+        lat: lat || null,
+        lng: lng || null
+      });
+    });
+    document.getElementById('matchNo').addEventListener('click', () => {
+      // Match yok gibi yeniden çağır — picker görünür.
+      showDistrictPicker(stateObj, districts, autoSelectedName, lat, lng, null);
+    });
+    return;
+  }
   const resultsHTML = districts.map(d => {
     const highlighted = autoSelectedName && d.name.toLocaleUpperCase('tr') === autoSelectedName.toLocaleUpperCase('tr');
     return `
@@ -1176,10 +1322,17 @@ async function startGpsFlow() {
   const nearest = findNearestState(lat, lng);
   showLoading(nearest.name + ' ilçeleri yükleniyor');
 
-  let states, districts, stateObj;
+  // Paralel: il listesi + Nominatim reverse geocoding (Nominatim hata verebilir, sorun değil)
+  let states, districts, stateObj, geocodedName;
   try {
     updateProgress(50);
-    states = await fetchStates();
+    const [statesResult, geocodedResult] = await Promise.all([
+      fetchStates(),
+      reverseGeocodeDistrict(lat, lng)
+    ]);
+    states = statesResult;
+    geocodedName = geocodedResult;
+
     stateObj = states.find(s => s.name.toLocaleUpperCase('tr') === nearest.name);
     if (!stateObj) { showSetup('İl eşleştirilemedi.'); return; }
 
@@ -1192,19 +1345,23 @@ async function startGpsFlow() {
 
   updateProgress(100);
 
-  // İl merkeziyle aynı isimli ilçeyi öner (örn. "İstanbul" yerine "Çekmeköy" değil,
-  // ama kullanıcı kendi seçsin - biz sadece kullanıcıyı ilçe seçtirme ekranına yönlendiriyoruz)
-  // Kullanıcının konumuna en yakın merkez ilçeyi "önerelim" — il merkez koordinatını kullanabiliriz
-  // ama ilçelerin koordinatı yok. Yine de "MERKEZ" veya il adıyla eşleşeni işaretleyelim
-  let suggested = null;
-  const stateName = stateObj.name.toLocaleUpperCase('tr');
-  const merkezMatch = districts.find(d => {
-    const n = d.name.toLocaleUpperCase('tr');
-    return n === stateName || n === 'MERKEZ';
-  });
-  if (merkezMatch) suggested = merkezMatch.name;
+  // 1. öncelik: Nominatim'in döndürdüğü ilçe ismi listede match olursa onay kartı göster.
+  // Match olursa kullanıcı tek tıkla devam edebilir.
+  let matchedDistrict = null;
+  if (geocodedName) matchedDistrict = findDistrictByName(geocodedName, districts);
 
-  showDistrictPicker(stateObj, districts, suggested, lat, lng);
+  // 2. öncelik (fallback): Match olmazsa eski "MERKEZ" tabanlı zayıf öneri.
+  let suggested = null;
+  if (!matchedDistrict) {
+    const stateName = stateObj.name.toLocaleUpperCase('tr');
+    const merkezMatch = districts.find(d => {
+      const n = d.name.toLocaleUpperCase('tr');
+      return n === stateName || n === 'MERKEZ';
+    });
+    if (merkezMatch) suggested = merkezMatch.name;
+  }
+
+  showDistrictPicker(stateObj, districts, suggested, lat, lng, matchedDistrict);
 }
 
 async function startManualFlow() {
