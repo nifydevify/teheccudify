@@ -95,6 +95,20 @@ GPS akışında ilçeyi doğru tespit etmek için Nominatim'e reverse geocode is
 - **Rate limit:** Nominatim 1 req/sec; setup nadir yapıldığı için sorun değil.
 - **UX:** Match olursa belirgin yeşil onay kartı ("Konum tespit edildi · Çekmeköy · Evet, devam et / Hayır, listeden seçeyim"). "Evet" → tek tıkla setup. "Hayır" → ilçe listesi.
 
+### 8. Kerahat vakitleri
+Hanefî mezhebine göre namazın haram/şiddetle mekruh olduğu üç vakit hesaplanır. Süreler **yaklaşık** değerlerdir (alimler arasında ufak farklar var); kodda sabit olarak tanımlı, ihtiyatlı seçildi:
+- `KERAHAT_SUNRISE_MIN = 45` — Güneş doğumundan sonra mızrak boyu yükselene kadar
+- `KERAHAT_ISTIVA_MIN = 10` — Öğle vakti girmeden önce (zeval/istiva, güneş tepe noktasında)
+- `KERAHAT_GURUB_MIN = 40` — Akşam namazından önce (güneş sararma)
+
+`getKerahatWindows(todayPT)` üç pencereyi `{name, start, end}` array'i olarak döner. `findActiveKerahat(now, windows)` o an aktif olanı (varsa) döner.
+
+**UX iki katmanlı:**
+- **Üst uyarı kartı** (`.kerahat-warning`): Sadece kerahat aktifken render edilir. Kırmızımsı renk + "Çıkışına X dk var" countdown.
+- **Liste** (`.kerahat-list`): Vakitler listesinin altında her zaman görünür. Bugünün 3 penceresi; geçenler `.passed` ile soluk, aktif olan `.active` ile kırmızı.
+
+**Yan etki:** Eski `findCurrentPrayer` segment ismi `'Kerahat (Güneş)'` (sunrise → dhuhr) → `'Kuşluk'` olarak düzeltildi. Eski etiket yanıltıcıydı çünkü gerçek kerahat sadece ilk 45 dk; gerisi duha/kuşluk vakti, nafile namaza açık. `prayerList[].seg` haritalaması da `'Kuşluk'` olarak güncellendi (ikisi tutarlı olmalı).
+
 ## Çözülen Önemli Problemler
 
 ### Problem 1: Veri doğruluğu
@@ -128,6 +142,18 @@ GPS akışında ilçeyi doğru tespit etmek için Nominatim'e reverse geocode is
 ### Problem 8: GPS sonrası ilçe önerisi alakasızdı
 **Sorun:** GPS → en yakın il bulunduktan sonra, ilçe önerisi sadece `name === stateName || name === 'MERKEZ'` ile yapılıyordu. Kullanıcı Çekmeköy'de olsa bile İstanbul'un "Adalar" gibi bir ilçesi öneriliyordu (alfabetik sıraya bağlı). API ilçe koordinatı döndürmediği için haversine'le en yakın ilçeyi bulmak mümkün değildi.
 **Çözüm:** Nominatim reverse geocoding entegre edildi (Bölüm 7'ye bak). GPS akışında `Promise.all` ile il listesi ve Nominatim paralel çağrılır. Match bulunursa belirgin onay kartı çıkar; match olmazsa eski zayıf öneri fallback olarak korunur.
+
+### Problem 9: "Kerahat (Güneş)" etiketi sabah-öğle arası tüm vakti yanlış kapsıyordu
+**Sorun:** `findCurrentPrayer` segments dizisinde `{ name: 'Kerahat (Güneş)', start: sunrise, end: dhuhr }` vardı. Kullanıcı "Şu an" kartında öğleye kadar 4-5 saat boyunca "Kerahat (Güneş) vakti" görüyordu — halbuki gerçek kerahat sadece güneş doğumundan sonra ~45 dk; gerisi kuşluk vakti, namaza açık.
+**Çözüm:** Segment ismi `'Kuşluk'` olarak değiştirildi. Gerçek kerahat hesabı ayrı bir katman olarak `getKerahatWindows()` ile yapılıyor (Bölüm 8). `prayerList[].seg` mapping de `'Kuşluk'` olarak güncellendi (segments ile match tutması için).
+
+### Problem 10: Yıl son günü öğleden sonra teheccüd vakti saçmalıyordu
+**Sorun:** `tomorrowPT` yoksa (örn. 31 Aralık öğleden sonra, 2027 verisi henüz yok), `renderTimes` fallback olarak `calcTeheccud(todayPT, todayPT)` çağırıyordu. Bu durumda `nightMs = todayPT.fajr - todayPT.maghrib` negatif çıkıyor (~-12 saat), `lastThirdStart` saçma değer veriyordu (örn. öğleden sonra 10:00 sabah).
+**Çözüm:** Fallback kaldırıldı. `tomorrowPT` yoksa `teh = null` ve kullanıcıya `error-msg` kartı + "Verileri Güncelle" butonu gösteriliyor.
+
+### Problem 11: Tab geçişinde iOS'ta "İzin hatası" mesajı
+**Sorun:** `startCompass` her çağrıldığında `DeviceOrientationEvent.requestPermission()` çağırıyordu. Tab geçişinde `renderQibla` `qiblaState.permGranted` true ise `startCompass`'i otomatik tetikliyor — bu user gesture dışında oluyor. iOS'ta `requestPermission` user gesture dışında exception fırlatır; catch bloğu kullanıcıya yanlışlıkla "İzin hatası" mesajı yazar.
+**Çözüm:** `requestPermission` çağrısının başına `!qiblaState.permGranted` koşulu eklendi. İzin bir kez alındıktan sonra tab geçişinde tekrar sorulmaz.
 
 ## Açık İşler / Yapılabilecek Geliştirmeler
 

@@ -11,6 +11,7 @@ Türkiye'deki Müslümanlar için Diyanet İşleri Başkanlığı verisiyle nama
 - **Günün namaz vakitlerini** Diyanet'ten alıp gösterir (imsak, güneş, öğle, ikindi, akşam, yatsı).
 - **Teheccüd vaktini hesaplar:** akşam ile imsak arasındaki gecenin **son üçte birini** otomatik bulur — sünnet üzere en faziletli vakti gösterir.
 - **Şu an hangi vakit?** O an aktif vakti (örn. "Öğle vakti") ve çıkmasına ne kadar kaldığını canlı olarak söyler.
+- **Kerahat vakti uyarısı:** Hanefî mezhebine göre namazın kılınmadığı üç vakti (güneş doğumu sonrası, istiva, güneş batımı) hesaplar; o an kerahatte isen kırmızı bir uyarı kartıyla bildirir, bugünün tüm kerahat pencerelerini listeler.
 - **Kıble pusulası:** GPS + telefon sensörüyle Kabe yönünü gösterir, telefon kıbleye dönünce yeşil parıldar.
 - **Hicri tarih** her gün otomatik güncellenir.
 - **Bildirim kurma:** Teheccüd vakti gelince hatırlatma (sayfa açıkken çalışır).
@@ -48,6 +49,7 @@ Tarayıcıda direkt aç, browser sekmesi olarak kullan.
 | Konum | GPS (otomatik) veya il/ilçe seçimi (manuel). GPS kullanılıyorsa OpenStreetMap Nominatim ile ilçe ismi tespit edilir |
 | Kıble | Great-circle bearing formülüyle Kabe yönü; cihaz pusulasıyla eşleşir |
 | Pusula yumuşatma | 8 örneklik dairesel ortalama — sensör titremesine karşı |
+| Kerahat | Hanefî mezhebine göre üç vakit hesaplanır: güneş doğumu sonrası 45 dk, istivaya 10 dk, güneş batışına 40 dk |
 | Tema | Koyu altın, Cormorant Garamond + Jost fontları |
 
 ## Teknoloji
