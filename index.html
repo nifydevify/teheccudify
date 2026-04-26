@@ -1528,9 +1528,11 @@ function formatDateTR(date) {
 function formatDuration(ms) {
   if (ms < 0) ms = 0;
   const totalMin = Math.floor(ms / 60000);
+  if (totalMin === 0) return '1 dakikadan az';
   const hours = Math.floor(totalMin / 60);
   const minutes = totalMin % 60;
-  if (hours > 0) return hours + ' saat ' + minutes + ' dakika';
+  if (hours > 0 && minutes > 0) return hours + ' saat ' + minutes + ' dakika';
+  if (hours > 0) return hours + ' saat';
   return minutes + ' dakika';
 }
 
@@ -1695,7 +1697,7 @@ function renderTimes(state) {
     `;
   }
 
-  // Kerahat penceleri listesi — geçenler soluk, aktif olan kırmızı
+  // Kerahat pencereleri listesi — geçenler soluk, aktif olan kırmızı
   const kerahatRowsHTML = kerahatWindows.map(w => {
     const isActive = now >= w.start && now < w.end;
     const isPast = now >= w.end;
