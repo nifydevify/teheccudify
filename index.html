@@ -893,7 +893,7 @@ body::before {
 <div class="container">
 
   <div class="header">
-    <div class="bismillah">Bismillāhir Raḥmānir Raḥīm</div>
+    <div class="bismillah">Bismillāhirraḥmānirraḥīm</div>
     <div class="ornament">
       <div class="ornament-line"></div>
       <div class="ornament-star">✦</div>
@@ -1518,10 +1518,18 @@ function renderTimes(state) {
 
   hijriDate.textContent = yd.hijri[keyFor(today)] || '';
 
-  let teh;
+  // Teheccüd, iki günü gerektirir: bir günün akşamı + ertesi günün imsakı.
+  // Yıl son günü öğleden sonra tomorrowPT yoksa hesap yapılamaz —
+  // calcTeheccud(todayPT, todayPT) negatif gece süresi üretir, saçma vakit gösterir.
+  let teh = null;
   if (now < todayPT.fajr && yesterdayPT) teh = calcTeheccud(yesterdayPT, todayPT);
   else if (tomorrowPT) teh = calcTeheccud(todayPT, tomorrowPT);
-  else teh = calcTeheccud(todayPT, todayPT);
+
+  if (!teh) {
+    content.innerHTML = '<div class="error-msg">Yarınki vakit verisi yok. Yeni yıl verilerini indirmek için "Verileri Güncelle" butonuna bas.</div><button class="btn-primary" id="btnRefresh">Verileri Güncelle</button>';
+    document.getElementById('btnRefresh').addEventListener('click', () => completeSetup(loc));
+    return;
+  }
 
   const current = findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT);
   const next = findNextPrayer(now, todayPT, tomorrowPT);
@@ -1564,7 +1572,8 @@ function renderTimes(state) {
     prayersHTML += `<div class="${cls}"><span class="prayer-name">${p.name}</span><span class="prayer-time">${formatTime(p.time)}</span></div>`;
   }
 
-  const dataAge = Math.floor((Date.now() - state.lastUpdate) / 86400000);
+  const dataAgeDays = Math.floor((Date.now() - state.lastUpdate) / 86400000);
+  const dataAgeText = dataAgeDays === 0 ? 'bugün indirildi' : dataAgeDays + ' gün önce indirildi';
 
   content.innerHTML = `
     ${currentHTML}
@@ -1584,7 +1593,7 @@ function renderTimes(state) {
     </div>
     <button class="notify-btn" id="notifyBtn">Bildirim Kur</button>
     <button class="btn-secondary" id="btnRefresh">Verileri Güncelle</button>
-    <div class="source-tag">Diyanet İşleri Başkanlığı · ${dataAge} gün önce indirildi<br>Tamamen offline çalışır</div>
+    <div class="source-tag">Diyanet İşleri Başkanlığı · ${dataAgeText}<br>Tamamen offline çalışır</div>
     <div class="hadith">
       <div class="hadith-text">"Rabbimiz her gece, gecenin son üçte biri kaldığında dünya semasına iner ve şöyle buyurur:<br>— Kim bana dua ediyor, duasını kabul edeyim."</div>
       <div class="hadith-source">Buhârî · Teheccüd 14</div>
@@ -1718,8 +1727,13 @@ async function startCompass() {
   const statusEl = document.getElementById('qiblaStatus');
   const btn = document.getElementById('btnEnableCompass');
 
-  // iOS 13+ izin isteme
-  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+  // iOS 13+ izin isteme — permGranted true ise tekrar çağırma!
+  // iOS'ta requestPermission() user gesture dışında çağrılırsa exception fırlatır;
+  // tab geçişinde renderQibla otomatik startCompass çağırınca buraya düşer ve
+  // kullanıcıya "İzin hatası" gibi yanlış mesaj gösterilir.
+  if (!qiblaState.permGranted &&
+      typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
     try {
       const perm = await DeviceOrientationEvent.requestPermission();
       if (perm !== 'granted') {
