@@ -84,7 +84,16 @@ Storage key: `teheccud_v3`. Versiyon sadece **şema bozucu değişiklik** olduğ
 - iOS 13+ izin gerektirir: `DeviceOrientationEvent.requestPermission()` (button click içinde olmalı)
 - Android: `deviceorientationabsolute` + `360 - alpha`
 - **Smoothing:** Son 8 okumanın circular mean'i alınır (basit ortalama 359°+1° için 180° verir, yanlış)
-- **Accuracy göstergesi:** iOS'taki `webkitCompassAccuracy` ile yeşil/sarı/kırmızı durum gösterilir
+- **Accuracy göstergesi:** iOS'taki `webkitCompassAccuracy` ile yeşil/altın/kırmızı durum gösterilir (>30° veya negatif = kalibrasyon gerek)
+
+### 7. Reverse geocoding: Nominatim (OpenStreetMap)
+GPS akışında ilçeyi doğru tespit etmek için Nominatim'e reverse geocode isteği atılır.
+- **Endpoint:** `https://nominatim.openstreetmap.org/reverse?lat=X&lon=Y&format=jsonv2&accept-language=tr&zoom=12`
+- **Hangi alan kullanılır:** `address.town` öncelikli (Türkiye için en güvenilir, ilçe seviyesi). Fallback: `city_district → county → municipality → village`. `suburb` mahalle düzeyindedir, kullanılmaz.
+- **Match:** `normalizeDistrictName()` Türkçe karakter ve büyük/küçük farkını eler (Nominatim "Çekmeköy" → API "ÇEKMEKÖY"; bazen API ASCII verir: "ARNAVUTKOY"). Tam eşleşme öncelikli, sonra ön ek eşleşmesi.
+- **Hata durumu:** 5sn timeout, fetch hatası → null döner, çağıran taraf eski "MERKEZ" tabanlı zayıf öneriye düşer. Kullanıcı asla mahsur kalmaz.
+- **Rate limit:** Nominatim 1 req/sec; setup nadir yapıldığı için sorun değil.
+- **UX:** Match olursa belirgin yeşil onay kartı ("Konum tespit edildi · Çekmeköy · Evet, devam et / Hayır, listeden seçeyim"). "Evet" → tek tıkla setup. "Hayır" → ilçe listesi.
 
 ## Çözülen Önemli Problemler
 
@@ -105,12 +114,20 @@ Storage key: `teheccud_v3`. Versiyon sadece **şema bozucu değişiklik** olduğ
 **Çözüm:** GPS → en yakın il → ilçe **listesi** gösterilir, kullanıcı kendi ilçesini seçer.
 
 ### Problem 5: Her şehirde aynı kıble açısı
-**Sorun:** Eski cached `userLat/userLng` koordinatı yeni şehir seçilince yeniden yazılmıyordu, hep ilk konum kullanılıyordu.
-**Çözüm:** `completeSetup` fonksiyonunda her seferinde GPS koordinatı veya `STATE_COORDS[loc.stateName]` fallback'i kullanılıyor, eski state ignored.
+**Sorun:** `completeSetup`'ta `loc.lat || existingState.userLat || null` mantığı vardı; manuel ilçe seçiminde `loc.lat` null geldiği için eski şehrin GPS koordinatı tekrar kullanılıyordu, kıble açısı yanlış çıkıyordu.
+**Çözüm:** `existingState`'e fallback tamamen kaldırıldı. Yeni mantık: GPS varsa onu kullan, yoksa **seçilen ilin** `STATE_COORDS[loc.stateName]` merkez koordinatına düş. Eski state'in koordinatı asla taşınmaz.
 
 ### Problem 6: Pusula sapması
 **Sorun:** Sensör titrek, anlık 10-20° sıçramalar yapıyordu.
-**Çözüm:** 8 sample'lık circular mean smoothing + accuracy indicator (yeşil/sarı/kırmızı durum).
+**Çözüm:** 8 sample'lık circular mean smoothing + accuracy indicator (yeşil/altın/kırmızı durum).
+
+### Problem 7: Bildirim çift kuruluyordu
+**Sorun:** "Bildirim Kur" butonuna ikinci kez tıklamak yeni bir `setTimeout` daha kuruyordu — kullanıcı aynı vakitte 2-3 bildirim alıyordu. `sessionStorage` flag'i sadece UI metnini değiştirmek için bakılıyordu, tıklama mantığında erken return yoktu.
+**Çözüm:** Click handler'ın en başında `sessionStorage.getItem(key) === '1'` kontrolü → erken return. `sessionStorage.setItem(key, '1')` artık `setTimeout`'tan **önce** çağrılıyor (race önlemi).
+
+### Problem 8: GPS sonrası ilçe önerisi alakasızdı
+**Sorun:** GPS → en yakın il bulunduktan sonra, ilçe önerisi sadece `name === stateName || name === 'MERKEZ'` ile yapılıyordu. Kullanıcı Çekmeköy'de olsa bile İstanbul'un "Adalar" gibi bir ilçesi öneriliyordu (alfabetik sıraya bağlı). API ilçe koordinatı döndürmediği için haversine'le en yakın ilçeyi bulmak mümkün değildi.
+**Çözüm:** Nominatim reverse geocoding entegre edildi (Bölüm 7'ye bak). GPS akışında `Promise.all` ile il listesi ve Nominatim paralel çağrılır. Match bulunursa belirgin onay kartı çıkar; match olmazsa eski zayıf öneri fallback olarak korunur.
 
 ## Açık İşler / Yapılabilecek Geliştirmeler
 
