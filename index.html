@@ -650,6 +650,65 @@ body::before {
 .kerahat-row.active .kerahat-time { color: var(--red); }
 .kerahat-row.passed { opacity: 0.4; }
 
+/* Yaklaşan kerahat — kerahat 15 dk içinde başlayacaksa altın uyarı */
+.kerahat-upcoming {
+  background: linear-gradient(180deg, rgba(212, 165, 116, 0.18) 0%, rgba(212, 165, 116, 0.04) 100%);
+  border: 1px solid rgba(212, 165, 116, 0.5);
+  padding: 18px 22px;
+  margin-bottom: 16px;
+  text-align: center;
+  border-radius: 2px;
+  position: relative;
+}
+.kerahat-upcoming::before, .kerahat-upcoming::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--gold);
+  opacity: 0.5;
+}
+.kerahat-upcoming::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.kerahat-upcoming::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.kerahat-upcoming-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.kerahat-upcoming-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.kerahat-upcoming-sub {
+  font-size: 13px;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.kerahat-upcoming-sub strong { color: var(--gold-bright); font-weight: 500; }
+
+/* Bildirim butonu altındaki açıklama notu */
+.notify-hint {
+  font-size: 11px;
+  color: var(--ink-dim);
+  text-align: center;
+  margin: -4px 0 16px;
+  padding: 0 8px;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+}
+.notify-hint strong { color: var(--gold); font-weight: 500; }
+
 .kerahat-note {
   font-size: 10px;
   color: var(--ink-dim);
@@ -1584,6 +1643,18 @@ function findActiveKerahat(now, windows) {
   return null;
 }
 
+// Kullanıcı namaz kılmaya başlamak üzere ama N dakika sonra kerahat girecekse
+// önceden uyarı vermek için. Şu an aktif olmayan ama yakın gelecekteki ilk
+// pencereyi döner.
+function findUpcomingKerahat(now, windows, withinMin) {
+  const horizonMs = withinMin * 60000;
+  for (const w of windows) {
+    const ms = w.start - now;
+    if (ms > 0 && ms <= horizonMs) return w;
+  }
+  return null;
+}
+
 function calcTeheccud(todayPT, tomorrowPT) {
   const maghrib = todayPT.maghrib;
   const fajr = tomorrowPT.fajr;
@@ -1665,9 +1736,10 @@ function renderTimes(state) {
   const current = findCurrentPrayer(now, todayPT, tomorrowPT, yesterdayPT);
   const next = findNextPrayer(now, todayPT, tomorrowPT);
 
-  // Kerahat hesabı — bugünün 3 penceresi + şu an aktif olan
+  // Kerahat hesabı — bugünün 3 penceresi + şu an aktif olan + 15 dk içinde başlayacak olan
   const kerahatWindows = getKerahatWindows(todayPT);
   const activeKerahat = findActiveKerahat(now, kerahatWindows);
+  const upcomingKerahat = activeKerahat ? null : findUpcomingKerahat(now, kerahatWindows, 15);
 
   let countdownText;
   const msToTeheccud = teh.lastThirdStart - now;
@@ -1675,14 +1747,26 @@ function renderTimes(state) {
   else if (now < teh.imsak) countdownText = '⋆ Şu an faziletli vakit · İmsaka <strong>' + formatDuration(teh.imsak - now) + '</strong>';
   else countdownText = 'Bir sonraki gece için bekleniyor';
 
-  // Kerahat aktifse en üstte belirgin uyarı kartı göster
-  const kerahatWarningHTML = activeKerahat ? `
-    <div class="kerahat-warning">
-      <div class="kerahat-warning-label">⚠ Kerahat vakti</div>
-      <div class="kerahat-warning-name">${activeKerahat.name}</div>
-      <div class="kerahat-warning-sub">Namaz kılınmaz · Çıkışına <strong>${formatDuration(activeKerahat.end - now)}</strong> var</div>
-    </div>
-  ` : '';
+  // Kerahat aktifse kırmızı uyarı; değilse 15 dk içinde başlayacaksa altın uyarı.
+  // Kullanıcı namaza başlayacakken yaklaşan kerahatı görsün diye.
+  let kerahatWarningHTML = '';
+  if (activeKerahat) {
+    kerahatWarningHTML = `
+      <div class="kerahat-warning">
+        <div class="kerahat-warning-label">⚠ Kerahat vakti</div>
+        <div class="kerahat-warning-name">${activeKerahat.name}</div>
+        <div class="kerahat-warning-sub">Namaz kılınmaz · Çıkışına <strong>${formatDuration(activeKerahat.end - now)}</strong> var</div>
+      </div>
+    `;
+  } else if (upcomingKerahat) {
+    kerahatWarningHTML = `
+      <div class="kerahat-upcoming">
+        <div class="kerahat-upcoming-label">⏳ Kerahat yaklaşıyor</div>
+        <div class="kerahat-upcoming-name">${upcomingKerahat.name}</div>
+        <div class="kerahat-upcoming-sub">Başlamasına <strong>${formatDuration(upcomingKerahat.start - now)}</strong> var · Acele et</div>
+      </div>
+    `;
+  }
 
   let currentHTML = '';
   if (current) {
@@ -1743,16 +1827,13 @@ function renderTimes(state) {
       <div class="sub-label">en faziletli teheccüd vakti</div>
       <div class="countdown">${countdownText}</div>
     </div>
-    <div class="window-info">
-      <div class="window-card"><div class="tag">Orta üçte bir</div><div class="val">${formatTime(teh.middleThirdStart)}</div></div>
-      <div class="window-card"><div class="tag">İmsaka kadar</div><div class="val">${formatTime(teh.imsak)}</div></div>
-    </div>
     <div class="prayers">
       <div class="prayers-title">${formatDateTR(now)}</div>
       ${prayersHTML}
     </div>
     ${kerahatListHTML}
     <button class="notify-btn" id="notifyBtn">Bildirim Kur</button>
+    <div class="notify-hint">Bildirim sadece uygulama açıkken çalışır. Garantiye almak için <strong>iOS Saat alarmı</strong> kurabilirsin.</div>
     <button class="btn-secondary" id="btnRefresh">Verileri Güncelle</button>
     <div class="source-tag">Diyanet İşleri Başkanlığı · ${dataAgeText}<br>Tamamen offline çalışır</div>
     <div class="hadith">
