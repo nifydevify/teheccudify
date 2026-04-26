@@ -11,10 +11,10 @@ Türkiye'deki Müslümanlar için Diyanet İşleri Başkanlığı verisiyle nama
 - **Günün namaz vakitlerini** Diyanet'ten alıp gösterir (imsak, güneş, öğle, ikindi, akşam, yatsı).
 - **Teheccüd vaktini hesaplar:** akşam ile imsak arasındaki gecenin **son üçte birini** otomatik bulur — sünnet üzere en faziletli vakti gösterir.
 - **Şu an hangi vakit?** O an aktif vakti (örn. "Öğle vakti") ve çıkmasına ne kadar kaldığını canlı olarak söyler.
-- **Kerahat vakti uyarısı:** Hanefî mezhebine göre namazın kılınmadığı üç vakti (güneş doğumu sonrası, istiva, güneş batımı) hesaplar; o an kerahatte isen kırmızı bir uyarı kartıyla bildirir, bugünün tüm kerahat pencerelerini listeler.
+- **Kerahat vakti uyarısı:** Hanefî mezhebine göre namazın kılınmadığı üç vakti (güneş doğumu sonrası, istiva, güneş batımı) hesaplar. Üç katmanlı uyarı: o an kerahatteysen kırmızı banner, 15 dk içinde kerahat başlayacaksa altın "yaklaşıyor" uyarısı, ayrıca bugünün tüm kerahat pencereleri listelenir.
 - **Kıble pusulası:** GPS + telefon sensörüyle Kabe yönünü gösterir, telefon kıbleye dönünce yeşil parıldar.
 - **Hicri tarih** her gün otomatik güncellenir.
-- **Bildirim kurma:** Teheccüd vakti gelince hatırlatma (sayfa açıkken çalışır).
+- **Bildirim kurma:** Teheccüd vakti gelince hatırlatma. Sadece uygulama açıkken çalışır (sunucusuz PWA olduğu için iOS arka plan bildirim mümkün değil); garantiye almak için iOS Saat uygulamasından alarm kurmanız önerilir.
 
 ## Neden Var?
 

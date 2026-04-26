@@ -103,11 +103,21 @@ Hanefî mezhebine göre namazın haram/şiddetle mekruh olduğu üç vakit hesap
 
 `getKerahatWindows(todayPT)` üç pencereyi `{name, start, end}` array'i olarak döner. `findActiveKerahat(now, windows)` o an aktif olanı (varsa) döner.
 
-**UX iki katmanlı:**
-- **Üst uyarı kartı** (`.kerahat-warning`): Sadece kerahat aktifken render edilir. Kırmızımsı renk + "Çıkışına X dk var" countdown.
+**UX üç katmanlı:**
+- **Aktif kerahat uyarısı** (`.kerahat-warning`): Şu an kerahat içindeyse kırmızı banner, "Çıkışına X dk var" countdown.
+- **Yaklaşan kerahat uyarısı** (`.kerahat-upcoming`): Aktif değilse, 15 dk içinde başlayacak kerahat varsa altın banner ("Başlamasına X dk var · Acele et"). `findUpcomingKerahat(now, windows, withinMin)` döndürür. Kullanıcının namaza başlamadan önce yaklaşan kerahatı görmesi için. Aktif olana öncelik verilir.
 - **Liste** (`.kerahat-list`): Vakitler listesinin altında her zaman görünür. Bugünün 3 penceresi; geçenler `.passed` ile soluk, aktif olan `.active` ile kırmızı.
 
 **Yan etki:** Eski `findCurrentPrayer` segment ismi `'Kerahat (Güneş)'` (sunrise → dhuhr) → `'Kuşluk'` olarak düzeltildi. Eski etiket yanıltıcıydı çünkü gerçek kerahat sadece ilk 45 dk; gerisi duha/kuşluk vakti, nafile namaza açık. `prayerList[].seg` haritalaması da `'Kuşluk'` olarak güncellendi (ikisi tutarlı olmalı).
+
+### 9. Bildirim sistemi sınırlı
+**Mevcut:** `Notification` API + `setTimeout` — sadece uygulama açıkken çalışır. Sayfa kapanınca timer ölür.
+
+**Neden gerçek arka plan bildirim yok:** iOS 16.4+ web push destekliyor ama VAPID anahtarı + push sunucusu (FCM/APNs) gerekir. Bu proje GitHub Pages'da sunucusuz olarak host ediliyor; backend yok. OneSignal/Firebase gibi 3. taraf servis eklemek hem proje sadelik felsefesine ters hem de gizlilik politikasını bozar (README'de "hiçbir sunucuya kullanıcı verisi gönderilmez" diye yazıyor).
+
+**UX kararı:** Butonun altında dürüst not (`.notify-hint`): "Bildirim sadece uygulama açıkken çalışır. Garantiye almak için iOS Saat alarmı kurabilirsin." Kullanıcıya yanlış beklenti yaratmıyoruz.
+
+**Açık iş listesindeki "Service Worker" maddesi:** SW eklemek offline cache'i iyileştirir ama bildirim sorununu çözmez (push olmadan SW uyutulur).
 
 ## Çözülen Önemli Problemler
 
