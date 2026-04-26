@@ -2432,6 +2432,10 @@ function buildIcs(state) {
       const summary = ruleText(rule) + ' · ' + state.location.districtName;
       const uid = 'teh-' + yd.year + key + '-' + rule.id + '@teheccudify';
 
+      // VALARM REPEAT + DURATION: iOS Takvim "alarm"ı sessize alınınca çalmaz,
+      // bildirim olarak gelir. Kaçırma şansını azaltmak için 1 dk arayla 2 kez
+      // tekrar (toplam 3 bildirim). Sessizde de çalsın diye Apple bir flag
+      // sunmuyor; gerçek "alarm" istiyorsan iPhone Saat alarmı kurman gerekir.
       lines.push(
         'BEGIN:VEVENT',
         'UID:' + uid,
@@ -2443,6 +2447,8 @@ function buildIcs(state) {
         'BEGIN:VALARM',
         'ACTION:DISPLAY',
         'TRIGGER:PT0M',
+        'DURATION:PT1M',
+        'REPEAT:2',
         'DESCRIPTION:' + icsEscape(ruleText(rule)),
         'END:VALARM',
         'END:VEVENT'
@@ -2498,9 +2504,12 @@ function renderNotify(state) {
       <div class="notify-panel-sub">Vakit-bazlı alarmlar</div>
 
       <div class="notify-intro">
-        Vakitlere göre alarm kuralları belirle, aşağıdaki <strong>Takvime Aktar</strong>
-        butonuyla yıllık <strong>.ics</strong> dosyasını indir, iPhone Takvimi'ne ekle.
-        Takvim alarmları uygulama kapalıyken bile çalar.
+        Vakitlere göre kural tanımla, <strong>.ics</strong> dosyasını indir, iPhone
+        Takvimi'ne ekle. Uygulama kapalıyken bile bildirim gelir.
+        <br><br>
+        <strong>Dikkat:</strong> Bu Saat alarmı değil — Takvim bildirimidir.
+        Sessize alınmış telefonda <strong>çalmaz</strong>. Sessizde de çalan
+        gerçek alarm istiyorsan iPhone <strong>Saat</strong> uygulamasından elle kur.
       </div>
 
       <div class="notify-rules" id="notifyRules">${rulesHTML}</div>
@@ -2535,10 +2544,19 @@ function renderNotify(state) {
         <ol>
           <li>".ics İndir" butonuna bas, dosyayı indir.</li>
           <li>İndirilenler'den dosyaya dokun.</li>
-          <li>"Takvim'e Ekle" → kullanılacak takvim seç → "Tamam".</li>
-          <li>Takvim alarmları otomatik kurulur, uygulama kapalı olsa da çalar.</li>
+          <li>"Takvim'e Ekle" → yeni bir takvim seç (ileride silmek kolay olsun).</li>
+          <li>Bildirim sesini aç: <strong>Ayarlar → Bildirimler → Takvim</strong>
+              → "Bildirimlere İzin Ver" açık + "Sesler" açık + "Banner Stili: Sürekli".</li>
+          <li>Sessiz mod kapalıyken vakit gelince bildirim gelir, ses çalar.
+              Kaçırmamak için 1 dk arayla 3 kez tekrar eder.</li>
         </ol>
-        <strong>Kuralları değiştirdin mi?</strong> Eski takvimi sil (Takvim &gt; Ayarlar &gt; Takvimler), yeni .ics indir, tekrar ekle. Yoksa eski + yeni alarmlar üst üste biner.
+        <strong>Kuralları değiştirdin mi?</strong> Eski takvimi sil
+        (Takvim &gt; Takvimler &gt; bilgi simgesi &gt; Takvimi Sil), yeni .ics
+        indir, tekrar ekle. Yoksa eski + yeni alarmlar üst üste biner.
+        <br><br>
+        <strong>Sessizde de çalsın mı istiyorsun?</strong> Bunun için iPhone'un
+        <strong>Saat</strong> uygulamasından elle alarm kur — Takvim'in
+        sessize uyma kuralını aşmanın başka yolu yok.
       </div>
     </div>
   `;
